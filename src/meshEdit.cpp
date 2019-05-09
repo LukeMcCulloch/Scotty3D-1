@@ -602,8 +602,70 @@ FaceIter HalfedgeMesh::bevelFace(FaceIter f) {
   // HalfedgeMesh::bevelFaceComputeNewPositions (which you also have to
   // implement!)
 
-  showError("bevelFace() not implemented.");
-  return facesBegin();
+ 
+	//cout << "test" << endl;
+	if (f->isBoundary()) { return f; }
+    
+	size_t sides = f->degree();
+
+	vector<HalfedgeIter> new_h;
+	vector<VertexIter> new_v;
+	vector<EdgeIter> new_e;
+	vector<FaceIter> new_face;
+
+	HalfedgeIter old_h = f->halfedge();
+
+	//initialize pointers to new elems
+	for (size_t i = 0; i < sides; i++) {
+		//add #sides faces
+		new_face.push_back(newFace());
+		//add #sides vertices
+		new_v.push_back(newVertex());
+		//add 2*#sides edges
+		new_e.push_back(newEdge());
+		new_e.push_back(newEdge());
+		//add 4*#sides halfedges
+		new_h.push_back(newHalfedge());
+		new_h.push_back(newHalfedge());
+		new_h.push_back(newHalfedge());
+		new_h.push_back(newHalfedge());
+	}
+	
+	//temp_h can save the value of old_h, before we change the next() of old_h
+	HalfedgeIter temp_h;
+	
+	//set the relationship between elems
+	for (size_t i = 0; i < sides; i++) {
+		//old halfedge should change face and next
+		old_h->face() = new_face[i];
+
+		//initialize halfedge for newface
+		new_face[i]->halfedge() = old_h;
+
+		//initialize halfedge for newedge
+		new_e[i * 2]->halfedge() = new_h[4 * i];
+		new_e[i * 2 + 1]->halfedge() = new_h[i * 4 + 1];
+
+		//intialize halfedge for newvertex
+		new_v[i]->halfedge() = new_h[i * 4 + 1];
+		new_v[i]->position = old_h->next()->vertex()->position;
+
+		//intialize the value for newhalfedges
+		new_h[i * 4]->setNeighbors(new_h[i * 4 + 1], new_h[((i + 1) % sides) * 4 + 2], old_h->next()->vertex(), new_e[i * 2], new_face[i]);
+		new_h[i * 4 + 1]->setNeighbors(new_h[i * 4 + 2], new_h[i * 4 + 3], new_v[i], new_e[i * 2 + 1], new_face[i]);
+		new_h[i * 4 + 2]->setNeighbors(old_h, new_h[((i - 1+sides) % sides) * 4], new_v[(i - 1+sides) % sides], new_e[((i - 1+sides) % sides) * 2], new_face[i]);
+		new_h[i * 4 + 3]->setNeighbors(new_h[((i + 1) % sides) * 4 + 3], new_h[i * 4 + 1], new_v[(i - 1+sides) % sides], new_e[i * 2 + 1], f);
+
+		//save the value before go to next
+		temp_h = old_h;
+		old_h = old_h->next();
+		temp_h->next() = new_h[i * 4];
+	}
+
+	//assign halfedge to original face
+	f->halfedge() = new_h[3];
+
+	return f;
 }
 
 
@@ -680,18 +742,92 @@ void HalfedgeMesh::splitPolygons(vector<FaceIter>& fcs) {
 void HalfedgeMesh::splitPolygon(FaceIter f) {
   // TODO: (meshedit) 
   // Triangulate a polygonal face
-  showError("splitPolygon() not implemented.");
+  
+	if (f->degree() == 3) { return; }
+	size_t num_e = f->degree() - 3;
+	size_t num_h = num_e * 2;
+
+	vector<EdgeIter> new_e;
+	vector<FaceIter> new_f;
+	vector<HalfedgeIter> new_h;
+	//alloct new edge, face and halfedge
+	for (size_t i = 0; i < num_e; i++) {
+		new_e.push_back(newEdge());
+		new_f.push_back(newFace());
+		new_h.push_back(newHalfedge());
+		new_h.push_back(newHalfedge());
+	}
+
+	VertexIter v = f->halfedge()->vertex();
+	HalfedgeIter h0 = f->halfedge();
+	HalfedgeIter h1 = h0->next();
+	v->halfedge() = h0;
+
+	//deal with the first
+	HalfedgeIter temp1 = h1->next();
+	new_e[0]->halfedge() = new_h[0];
+	h1->next() = new_h[0];
+	new_h[0]->setNeighbors(h0, new_h[1], temp1->vertex(), new_e[0], f);
+
+	//deal with the middle
+	for (size_t j = 0; j < num_e - 1; j++) {
+		HalfedgeIter temp2 = temp1;
+		temp1 = temp1->next();
+		new_h[2 * j + 1]->setNeighbors(temp2, new_h[2 * j], v, new_e[j], new_f[j]);
+		new_h[2 * j + 2]->setNeighbors(new_h[2 * j + 1], new_h[2 * j + 3], temp1->vertex(), new_e[j + 1], new_f[j]);
+		temp2->next() = new_h[2 * j + 2];
+		new_f[j]->halfedge() = temp2;
+		new_e[j + 1]->halfedge() = new_h[2 * j + 2];
+	}
+
+	//deal with the last
+	//the last halfedge is new_h[num_h-1]
+	temp1->face() = new_f[num_e - 1];
+	temp1->next()->face() = new_f[num_e - 1];
+	temp1->next()->next() = new_h[num_h - 1];
+	new_h[num_h - 1]->setNeighbors(temp1, new_h[num_h - 2], v, new_e[num_e - 1], new_f[num_e - 1]);
+	new_f[num_e - 1]->halfedge() = temp1;
+
 }
+
 
 EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
   // TODO: (meshEdit)
   // Compute the combined quadric from the edge endpoints.
+	//EdgeRecord R;
+	_edge->record.edge = _edge;
+  // Compute the combined quadric matrix from the edge endpoints.
+	Matrix4x4 quad = _edge->halfedge()->vertex()->quadric + _edge->halfedge()->twin()->vertex()->quadric;
   // -> Build the 3x3 linear system whose solution minimizes the quadric error
   //    associated with these two endpoints.
   // -> Use this system to solve for the optimal position, and store it in
   //    EdgeRecord::optimalPoint.
   // -> Also store the cost associated with collapsing this edg in
   //    EdgeRecord::Cost.
+  Matrix3x3 A;
+	A[0][0] = quad[0][0];
+	A[0][1] = quad[0][1];
+	A[0][2] = quad[0][2];
+	A[1][0] = quad[1][2];
+	A[1][1] = quad[1][1];
+	A[1][2] = quad[1][2];
+	A[2][0] = quad[2][0];
+	A[2][1] = quad[2][1];
+	A[2][2] = quad[2][2];
+	Vector3D b;
+	b[0] = -quad[0][3];
+	b[1] = -quad[1][3];
+	b[2] = -quad[2][3];
+  // -> Use this system to solve for the optimal position, and store it in
+  //    EdgeRecord::optimalPoint.
+	Vector3D x = A.inv()*b;
+	_edge->record.optimalPoint = x;
+  // -> Also store the cost associated with collapsing this edg in
+  //    EdgeRecord::Cost.
+	Vector3D dist = _edge->centroid() + x;
+	double cost = dist.norm();
+	_edge->record.score = cost;
+
 }
 
 void MeshResampler::upsample(HalfedgeMesh& mesh)
@@ -703,8 +839,27 @@ void MeshResampler::upsample(HalfedgeMesh& mesh)
   // the Loop subdivision rule, and store them in Vertex::newPosition.
   // -> At this point, we also want to mark each vertex as being a vertex of the
   //    original mesh.
+	for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++) {
+		v->isNew = false;
+		double n = (double)(v->degree());
+		double u;
+
+		if (n == 3) u = 3.0 / 16.0;
+		else u = 3.0 / (8.0 * n);
+
+		v->newPosition = (1.0 - u*n)*v->position + u*(n*v->neighborhoodCentroid());
+	}
+
   // -> Next, compute the updated vertex positions associated with edges, and
   //    store it in Edge::newPosition.
+	for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
+		HalfedgeIter temp1 = e->halfedge();
+		HalfedgeIter temp2 = temp1->twin();
+		e->newPosition = 3.0 / 8.0*2.0*e->centroid() + 1.0 / 8.0*(temp1->next()->next()->vertex()->position + temp2->next()->next()->vertex()->position);
+
+		e->isNew = false;
+	}
+
   // -> Next, we're going to split every edge in the mesh, in any order.  For
   //    future reference, we're also going to store some information about which
   //    subdivided edges come from splitting an edge in the original mesh, and
@@ -712,8 +867,47 @@ void MeshResampler::upsample(HalfedgeMesh& mesh)
   //    loop, we only want to iterate over edges of the original mesh.
   //    Otherwise, we'll end up splitting edges that we just split (and the
   //    loop will never end!)
+  int n = mesh.nEdges();
+	EdgeIter e = mesh.edgesBegin();
+	vector<EdgeIter> E;
+	vector<VertexIter> V;
+	for (int i = 0; i < n; i++) {
+
+		// get the next edge NOW!
+		EdgeIter nextEdge = e;
+		nextEdge++;
+
+		VertexIter v0;
+		if (e->isNew == false) {
+			E.push_back(e);
+			v0 = mesh.splitEdge(e);
+			V.push_back(v0);
+			v0->isNew = true;
+			v0->halfedge()->twin()->next()->edge()->isNew = true;
+			v0->halfedge()->next()->next()->edge()->isNew = true;
+			//v0->halfedge()->twin()->next()->twin()->next()->edge()->isNew = true;
+		}
+		
+
+		e = nextEdge;
+	}
+  
   // -> Now flip any new edge that connects an old and new vertex.
+  for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
+	  if ((e->isNew) && (e->halfedge()->vertex()->isNew ^ e->halfedge()->twin()->vertex()->isNew)) {
+			mesh.flipEdge(e);
+		}
+  }
+
   // -> Finally, copy the new vertex positions into final Vertex::position.
+  for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++) {
+		if (!v->isNew) v->position = v->newPosition;
+		//else v->position = v->halfedge()->edge()->newPosition;
+	}
+
+	for (int j = 0; j < V.size(); j++) {
+		V[j]->position = E[j]->newPosition;
+	}
 
   // Each vertex and edge of the original surface can be associated with a
   // vertex in the new (subdivided) surface.
@@ -752,18 +946,87 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
   // Compute initial quadrics for each face by simply writing the plane equation
   // for the face in homogeneous coordinates. These quadrics should be stored
   // in Face::quadric
+	for (FaceIter f = mesh.facesBegin(); f != mesh.facesEnd(); f++) {
+		Vector3D N = f->normal();
+		Vector3D p = f->centroid();
+		double dist = -dot(N, p);
+		Vector4D v = (N[0], N[1], N[2], dist);
+		f->quadric = outer(v, v);
+	}
+
   // -> Compute an initial quadric for each vertex as the sum of the quadrics
   //    associated with the incident faces, storing it in Vertex::quadric
+  for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++) {
+		HalfedgeIter h = v->halfedge();
+		Matrix4x4 quad = h->face()->quadric;
+		while (h->next() != v->halfedge()) {
+			h = h->next();
+			quad += h->face()->quadric;
+		}
+	}
+
   // -> Build a priority queue of edges according to their quadric error cost,
   //    i.e., by building an EdgeRecord for each edge and sticking it in the
   //    queue.
+  MutablePriorityQueue<EdgeRecord> queue;
+	for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
+		e->record = EdgeRecord(e);
+		queue.insert(e->record);
+	}
+
   // -> Until we reach the target edge budget, collapse the best edge. Remember
   //    to remove from the queue any edge that touches the collapsing edge
   //    BEFORE it gets collapsed, and add back into the queue any edge touching
   //    the collapsed vertex AFTER it's been collapsed. Also remember to assign
   //    a quadric to the collapsed vertex, and to pop the collapsed edge off the
   //    top of the queue.
-  showError("downsample() not implemented.");
+  Size budget = 3 * mesh.nEdges() / 4;
+	//cout << "current edge number" << mesh.nEdges() << endl;
+	//cout << "should have: " << mesh.nEdges() - budget << endl;
+	int i = 0;
+	while (mesh.nEdges() > budget) {
+		//cout << "round " << i << endl;
+		i++;
+
+		EdgeRecord best = queue.top();
+		EdgeIter e = best.edge;
+		queue.pop();
+		
+		VertexIter v0 = e->halfedge()->vertex();
+		//VertexIter v1 = e->halfedge()->twin()->vertex();
+		cout << "1" << endl;
+		//remove all related edges
+		HalfedgeIter temp1 = e->halfedge()->twin()->next();
+		while (temp1 != e->halfedge()) {
+			queue.remove(temp1->edge()->record);
+			temp1 = temp1->twin()->next();
+			
+		}
+		//cout << "2" << endl;
+		HalfedgeIter temp2 = e->halfedge()->next();
+		while (temp2 != e->halfedge()->twin()) {
+			queue.remove(temp2->edge()->record);
+			temp2 = temp2->twin()->next();
+		}
+		//cout << "3" << endl;
+		//cout << "e: " << &(e->halfedge()) << endl;
+		VertexIter v = mesh.collapseEdge(e);		
+		//cout << "v degree: " << v->degree() << endl;
+		//update quadric of related vertices, faces and edges
+		HalfedgeIter hv = v->halfedge();
+		Matrix4x4 mv;
+		mv.zero();
+		while (hv->twin()->next() != v->halfedge()) {
+			mv += hv->face()->quadric;
+			hv->edge()->record = EdgeRecord(hv->edge());
+			queue.insert(hv->edge()->record);
+			hv = hv->twin()->next();
+		}
+		v->quadric = mv;
+		//cout << "--one round--" << endl;
+	}
+	//cout << "simplification end" << endl;
+  //showError("downsample() not implemented.");
 }
 
 void MeshResampler::resample(HalfedgeMesh& mesh) {
