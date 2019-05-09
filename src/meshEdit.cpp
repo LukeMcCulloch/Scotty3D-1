@@ -50,15 +50,80 @@ FaceIter HalfedgeMesh::eraseEdge(EdgeIter e) {
   return FaceIter();
 }
 
+
 EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
   // TODO: (meshEdit)
   // This method should flip the given edge and return an iterator to the
   // flipped edge.
 
-  showError("flipEdge() not implemented.");
-  return EdgeIter();
-}
+  // Note: This does a complete reassignment of references, which will likely include
+  // changing things that don't technically need to be changed (like anyHalfEdge refs
+  // that weren't actually invalidated). This is done for simplicity and conciseness.
 
+  //
+  // NOTE: for tris only
+  //
+
+	if (e0->isBoundary()) {
+		return e0;
+	}
+
+	HalfedgeIter h = e0->halfedge();
+	HalfedgeIter h2 = h->twin();
+	HalfedgeIter h1 = h;
+	while (h1->next() != h) {
+		h1 = h1->next();
+	}
+	HalfedgeIter hn = h->next();
+	HalfedgeIter hnn = hn->next();
+	HalfedgeIter h2n = h2->next();
+	HalfedgeIter h2nn = h2n->next();
+	HalfedgeIter h6 = h2;
+	while (h6->next() != h2) {
+		h6 = h6->next();
+	}
+
+	VertexIter v0 = h->vertex();
+	VertexIter v1 = h2nn->vertex();
+	VertexIter v2 = h2->vertex();
+	VertexIter v3 = hnn->vertex();
+
+	FaceIter f0 = h->face();
+	FaceIter f1 = h2->face();
+
+	h1->next() = h2n;
+	h2n->next() = h;
+	h->next() = hnn;
+	h6->next() = hn;
+	hn->next() = h2;
+	h2->next() = h2nn;
+
+	h->vertex() = v1;
+	h2->vertex() = v3;
+
+	h2n->face() = f0;
+	hn->face() = f1;
+
+	h->edge() = e0;
+	h2->edge() = e0;
+
+	h->twin() = h2;
+	h2->twin() = h;
+
+	//update the vertex
+	v0->halfedge() = h2n;
+	v1->halfedge() = h2nn;
+	v2->halfedge() = hn;
+	v3->halfedge() = hnn;
+
+	//update the face
+	f0->halfedge() = h;
+	f1->halfedge() = h2;
+
+	e0->halfedge() = h;
+
+  return e0;
+}
 void HalfedgeMesh::subdivideQuad(bool useCatmullClark) {
   // Unlike the local mesh operations (like bevel or edge flip), we will perform
   // subdivision by splitting *all* faces into quads "simultaneously."  Rather
