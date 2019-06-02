@@ -17,7 +17,8 @@ namespace CMU462 {
  * EXTEND_ME : It might be nice to add some combined operations
  *             such as multiplying then adding,
  *             etc to increase arithmetic intensity.
- * I have taken the liberty of removing cross product functionality form 4D Matrices and Vectors.
+ * I have taken the liberty of removing cross product functionality 
+ * from 4D Matrices and Vectors.
  */
 class Matrix4x4 {
 
