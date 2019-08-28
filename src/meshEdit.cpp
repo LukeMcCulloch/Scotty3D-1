@@ -428,6 +428,7 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
     //-----------------------------------------------------
 	// Reassign elements
 	//
+	
 	// halfedges
 
 	h0->next()   = h1;
@@ -492,12 +493,26 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	h7->edge()   = e2; // constant
 	h7->face()   = f0; // constant
 
-	//
-	// vertices (I go around the outer loop here)
-	//
-	// edges
-	//
-	// faces
+	// vertices 
+
+	v0->halfedge() = h2;
+	v1->halfedge() = h5; //base on interior halfedge connectivity
+	v2->halfedge() = h3; // change from h2 to h3 switched the face it is "in"
+	v3->halfedge() = h0;// switched face it is "in" as well
+	// remember, half edges contain all the connectivity
+	// other elements are more  arbitrary
+
+	// edges (sticking with interior)
+
+	e0->halfedge() = h0;
+	e1->halfedge() = h5;
+	e2->halfedge() = h1;
+	e3->halfedge() = h2;
+	e4->halfedge() = h4;
+
+	// faces (sticking with interior)
+	f0->halfedge() = h0;
+	f1->halfedge() = h3;
 
 
   return e0;
