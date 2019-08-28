@@ -13,3 +13,5 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 [developers guide](https://github.com/cmu462/Scotty3D/wiki/Developer-Manual)
 
 [users guide](https://github.com/cmu462/Scotty3D/wiki/User-Guide)
+
+[build instructions](https://github.com/cmu462/Scotty3D/wiki/Build-Instructions)
