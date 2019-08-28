@@ -396,7 +396,7 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	// collect elements
 	//
 	// halfedges
-	HalfedgeIter h0 = e0->halfedge()
+	HalfedgeIter h0 = e0->halfedge();
 	HalfedgeIter h1 = h0->next();
 	HalfedgeIter h2 = h1->next();
 	HalfedgeIter h3 = h0->twin();
@@ -414,15 +414,15 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	VertexIter v3 = h8->vertex();
 	//
 	// edges
-	e0 = h0-edge();
-	e1 = h1->edge();
-	e2 = h2->edge();
-	e3 = h4->edge();
-	e4 = h5-edge();
+	e0 = h0->edge();
+	EdgeIter e1 = h1->edge();
+	EdgeIter e2 = h2->edge();
+	EdgeIter e3 = h4->edge();
+	EdgeIter e4 = h5->edge();
 	//
 	// faces
-	f0 = h0->face();
-	f1 = h3->face();
+	FaceIter f0 = h0->face();
+	FaceIter f1 = h3->face();
 
 
     //-----------------------------------------------------
