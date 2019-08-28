@@ -319,6 +319,14 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
   // NOTE: for tris only
   //
 
+  // There is a guide for this code 
+  //  todo: point at it here
+  /*
+	GUIDE TO IMPLEMENTING EDGE OPERATIONS
+	ON A HALFEDGE DATA STRUCTURE
+	CMU CS 15-462 (FALL 2015)
+  */
+
 	if (e0->isBoundary()) {
 		return e0;
 	}
