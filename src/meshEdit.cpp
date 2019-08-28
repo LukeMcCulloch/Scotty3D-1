@@ -352,14 +352,14 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 		v0                h7                v2   
     -----------------------------------------------------
 	ahha,
-	edge flip rotates the interior half edge elements.
+	edge flip rotates the interior halfedge elements.
 	easy once you see it!
 
-	- half-edges rotate (keeping their orientation)
-	  * a middle half edge stays in the middle
+	- halfedges rotate (keeping their orientation)
+	  * a middle halfedge stays in the middle
 	- edges stay the same
 	- vertices stay the same
-	- faces rotate with half-edges 
+	- faces rotate with halfedges 
 	  * changing 1 edges
 	  * changing 1 vertex
     -----------------------------------------------------
@@ -393,27 +393,20 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 		return e0;
 	}
 
-	HalfedgeIter h0 = 
-	HalfedgeIter h1 = 
-	HalfedgeIter h2 = 
-	HalfedgeIter h3 = 
-	HalfedgeIter h4 = 
-	HalfedgeIter h5 = 
-	HalfedgeIter h6 = 
-	HalfedgeIter h7 = 
-	HalfedgeIter h8 = 
-	HalfedgeIter h9 = 
-
-e0->halfedge()
-h0->next();
-h1->next();
-h0->twin();
-h3->next();
-h4->next();
-h1->twin();
-h2->twin();
-h4->twin();
-h5->twin();
+    //
+	// collect elements
+	//
+	// halfedges
+	HalfedgeIter h0 = e0->halfedge()
+	HalfedgeIter h1 = h0->next();
+	HalfedgeIter h2 = h1->next();
+	HalfedgeIter h3 = h0->twin();
+	HalfedgeIter h4 = h3->next();
+	HalfedgeIter h5 = h4->next();
+	HalfedgeIter h6 = h1->twin();
+	HalfedgeIter h7 = h2->twin();
+	HalfedgeIter h8 = h4->twin();
+	HalfedgeIter h9 = h5->twin();
 
   return e0;
 }
