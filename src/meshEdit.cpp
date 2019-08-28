@@ -407,20 +407,20 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	HalfedgeIter h8 = h4->twin();
 	HalfedgeIter h9 = h5->twin();
 	//
-	// vertices (I go around the outer loop here)
-	VertexIter v0 = h7->vertex();
-	VertexIter v2 = h6->vertex();
-	VertexIter v1 = h9->vertex();
-	VertexIter v3 = h8->vertex();
+	// vertices (always pull from the interior)
+	VertexIter v0 = h0->vertex();
+	VertexIter v1 = h3->vertex();
+	VertexIter v2 = h2->vertex();
+	VertexIter v3 = h5->vertex();
 	//
 	// edges
-	e0 = h0->edge();
+	//e0 = h0->edge(); passed in.  do not redeclare
 	EdgeIter e1 = h1->edge();
 	EdgeIter e2 = h2->edge();
 	EdgeIter e3 = h4->edge();
 	EdgeIter e4 = h5->edge();
 	//
-	// faces
+	// faces (pick the only unambiguous elements)
 	FaceIter f0 = h0->face();
 	FaceIter f1 = h3->face();
 
@@ -469,40 +469,40 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	
 	// outside elements
 
-	h6->next()   = h6->next(); //constant (and unknown in our diagram)
+	h6->next()   = h6->next(); //constant and unknown
 	h6->twin()   = h5;
 	h6->vertex() = v2; // constant
 	h6->edge()   = e1; // constant
-	h6->face()   = f0; // constant
+	h6->face()   = h6->face(); //constant and unknown
 	
-	h9->next()   = h9->next(); //constant (and unknown in our diagram)
+	h9->next()   = h9->next(); //constant and unknown 
 	h9->twin()   = h4;
 	h9->vertex() = v1; // constant
 	h9->edge()   = e4; // constant
-	h9->face()   = f1; // constant
+	h9->face()   = h9->face(); //constant and unknown
 	
-	h8->next()   = h8->next(); //constant (and unknown in our diagram)
+	h8->next()   = h8->next(); //constant and unknown 
 	h8->twin()   = h2;
 	h8->vertex() = v3; // constant
 	h8->edge()   = e3; // constant
-	h8->face()   = f0;
+	h8->face()   = h8->face(); //constant and unknown
 	
-	h7->next()   = h7->next(); //constant (and unknown in our diagram)
+	h7->next()   = h7->next(); //constant and unknown 
 	h7->twin()   = h1;
 	h7->vertex() = v0; // constant
 	h7->edge()   = e2; // constant
-	h7->face()   = f0; // constant
+	h7->face()   = h7->face(); //constant and unknown
 
 	// vertices 
 
-	v0->halfedge() = h2;
+	v0->halfedge() = h2; //not safe to leave as it was!
 	v1->halfedge() = h5; //base on interior halfedge connectivity
 	v2->halfedge() = h3; // change from h2 to h3 switched the face it is "in"
 	v3->halfedge() = h0;// switched face it is "in" as well
 	// remember, half edges contain all the connectivity
 	// other elements are more  arbitrary
 
-	// edges (sticking with interior)
+	// edges (sticking with interior) bad assumption
 
 	e0->halfedge() = h0;
 	e1->halfedge() = h5;
@@ -510,7 +510,7 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	e3->halfedge() = h2;
 	e4->halfedge() = h4;
 
-	// faces (sticking with interior)
+	// faces 
 	f0->halfedge() = h0;
 	f1->halfedge() = h3;
 
@@ -518,7 +518,7 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
   return e0;
 }
 
-// EdgeIter HalfedgeMesh::flipEdge_old(EdgeIter e0) {
+// EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 //   // TODO: (meshEdit)
 //   // This method should flip the given edge and return an iterator to the
 //   // flipped edge.
@@ -599,6 +599,7 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 
 //   return e0;
 // }
+
 void HalfedgeMesh::subdivideQuad(bool useCatmullClark) {
   // Unlike the local mesh operations (like bevel or edge flip), we will perform
   // subdivision by splitting *all* faces into quads "simultaneously."  Rather
