@@ -357,11 +357,10 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 
 	- halfedges rotate (keeping their orientation)
 	  * a middle halfedge stays in the middle
+	    so only middle twins will remain twins
 	- edges stay the same
 	- vertices stay the same
 	- faces rotate with halfedges 
-	  * changing 1 edges
-	  * changing 1 vertex
     -----------------------------------------------------
     After flip
 
@@ -393,7 +392,7 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 		return e0;
 	}
 
-    //
+    //-----------------------------------------------------
 	// collect elements
 	//
 	// halfedges
@@ -424,6 +423,73 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	// faces
 	f0 = h0->face();
 	f1 = h3->face();
+
+
+    //-----------------------------------------------------
+	// Reassign elements
+	//
+	// halfedges
+
+	h0->next()   = h1;
+	h0->twin()   = h3;
+	h0->vertex() = v3; 
+	h0->edge()   = e0;
+	h0->face()   = f0;
+
+	h1->next()   = h2;
+	h1->twin()   = h7;
+	h1->vertex() = v2; 
+	h1->edge()   = e2;
+	h1->face()   = f0;
+
+	h2->next()   = h0;
+	h2->twin()   = h8;
+	h2->vertex() = v0; 
+	h2->edge()   = e3;
+	h2->face()   = f0;
+
+	h3->next()   = h4;
+	h3->twin()   = h0;
+	h3->vertex() = v2; 
+	h3->edge()   = e0;
+	h3->face()   = f1;
+
+	h4->next()   = h5;
+	h4->twin()   = h9;
+	h4->vertex() = v3; 
+	h4->edge()   = e4;
+	h4->face()   = f1;
+
+	h5->next()   = h3;
+	h5->twin()   = h6;
+	h5->vertex() = v1; 
+	h5->edge()   = e1;
+	h5->face()   = f1;
+	
+	h6->next()   = h6->next(); //constant (and unknown in our diagram)
+	h6->twin()   = h5;
+	h6->vertex() = v2; // constant
+	h6->edge()   = e1; // constant
+	h6->face()   = f0; // constant
+	
+	h9->next()   = h9->next(); //constant (and unknown in our diagram)
+	h9->twin()   = h4;
+	h9->vertex() = v1; // constant
+	h9->edge()   = e4; // constant
+	h9->face()   = f1; // constant
+	
+	h8->next()   = h8->next(); //constant (and unknown in our diagram)
+	h8->twin()   = h2;
+	h8->vertex() = v3; // constant
+	h8->edge()   = e3; // constant
+	h8->face()   = f0;
+	//
+	// vertices (I go around the outer loop here)
+	//
+	// edges
+	//
+	// faces
+
 
   return e0;
 }
