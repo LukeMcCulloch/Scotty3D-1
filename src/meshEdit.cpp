@@ -322,71 +322,183 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
   // There is a guide for this code 
   //  todo: point at it here
   /*
+	See: 
 	GUIDE TO IMPLEMENTING EDGE OPERATIONS
 	ON A HALFEDGE DATA STRUCTURE
 	CMU CS 15-462 (FALL 2015)
-  */
+    -----------------------------------------------------
+    Before flip
+
+		v3            h9                    v1  
+			        <-------
+			o---------------e4-------------o 
+            |        ------->            . |
+            |           h5             .   |
+			|    f1                  .     |
+			|                       .      |
+            | ^              .    .        |
+            | |h4           .   .          |
+		    | |         h3.   .     ^      |  ^ 
+		 |	e3          .   e0    .        |  |h6
+	   h8|  |         v   .     . h0       e1 |        
+	     v	|           .     .          | |      
+		    |         .               h1 | |     
+			|       .                    v |   
+			|     .               f0       |
+			|   .           h2             | 
+            | .         <------            | 
+			o--------------e2--------------o    
+				        ------>  
+		v0                h7                v2   
+    -----------------------------------------------------
+	ahha,
+	edge flip rotates the interior half edge elements.
+	easy once you see it!
+
+	- half-edges rotate (keeping their orientation)
+	  * a middle half edge stays in the middle
+	- edges stay the same
+	- vertices stay the same
+	- faces rotate with half-edges 
+	  * changing 1 edges
+	  * changing 1 vertex
+    -----------------------------------------------------
+    After flip
+
+		v3            h9                     v1  
+			        <-------
+			o---------------e4-------------o 
+            | .      ------->              |
+            |   .       h4                 |
+			|     .             f1         |
+			|      .                       |
+            |        .   ^           h5|   |
+            | ^        .   .  h3       |   |
+		    | |h2       e0   .         v   |  ^ 
+		 |	| |       .    .   .           |  |h6
+	   h8|  |           .   .              e1 |      
+	     v	|         h0  .   .            |      
+		    e3             v    .          |     
+			|                     .        |   
+			|     f0                 .     |
+			|               h1         .   | 
+            |           <------          . | 
+			o--------------e2--------------o    
+				        ------>  
+		v0                h7                v2   
+
+  */    
 
 	if (e0->isBoundary()) {
 		return e0;
 	}
 
-	HalfedgeIter h = e0->halfedge();
-	HalfedgeIter h2 = h->twin();
-	HalfedgeIter h1 = h;
-	while (h1->next() != h) {
-		h1 = h1->next();
-	}
-	HalfedgeIter hn = h->next();
-	HalfedgeIter hnn = hn->next();
-	HalfedgeIter h2n = h2->next();
-	HalfedgeIter h2nn = h2n->next();
-	HalfedgeIter h6 = h2;
-	while (h6->next() != h2) {
-		h6 = h6->next();
-	}
+	HalfedgeIter h0 = 
+	HalfedgeIter h1 = 
+	HalfedgeIter h2 = 
+	HalfedgeIter h3 = 
+	HalfedgeIter h4 = 
+	HalfedgeIter h5 = 
+	HalfedgeIter h6 = 
+	HalfedgeIter h7 = 
+	HalfedgeIter h8 = 
+	HalfedgeIter h9 = 
 
-	VertexIter v0 = h->vertex();
-	VertexIter v1 = h2nn->vertex();
-	VertexIter v2 = h2->vertex();
-	VertexIter v3 = hnn->vertex();
-
-	FaceIter f0 = h->face();
-	FaceIter f1 = h2->face();
-
-	h1->next() = h2n;
-	h2n->next() = h;
-	h->next() = hnn;
-	h6->next() = hn;
-	hn->next() = h2;
-	h2->next() = h2nn;
-
-	h->vertex() = v1;
-	h2->vertex() = v3;
-
-	h2n->face() = f0;
-	hn->face() = f1;
-
-	h->edge() = e0;
-	h2->edge() = e0;
-
-	h->twin() = h2;
-	h2->twin() = h;
-
-	//update the vertex
-	v0->halfedge() = h2n;
-	v1->halfedge() = h2nn;
-	v2->halfedge() = hn;
-	v3->halfedge() = hnn;
-
-	//update the face
-	f0->halfedge() = h;
-	f1->halfedge() = h2;
-
-	e0->halfedge() = h;
+e0->halfedge()
+h0->next();
+h1->next();
+h0->twin();
+h3->next();
+h4->next();
+h1->twin();
+h2->twin();
+h4->twin();
+h5->twin();
 
   return e0;
 }
+
+// EdgeIter HalfedgeMesh::flipEdge_old(EdgeIter e0) {
+//   // TODO: (meshEdit)
+//   // This method should flip the given edge and return an iterator to the
+//   // flipped edge.
+
+//   // Note: This does a complete reassignment of references, which will likely include
+//   // changing things that don't technically need to be changed (like anyHalfEdge refs
+//   // that weren't actually invalidated). This is done for simplicity and conciseness.
+
+//   //
+//   // NOTE: for tris only
+//   //
+
+//   // There is a guide for this code 
+//   //  todo: point at it here
+//   /*
+// 	GUIDE TO IMPLEMENTING EDGE OPERATIONS
+// 	ON A HALFEDGE DATA STRUCTURE
+// 	CMU CS 15-462 (FALL 2015)
+//   */
+
+// 	if (e0->isBoundary()) {
+// 		return e0;
+// 	}
+
+// 	HalfedgeIter h = e0->halfedge();
+// 	HalfedgeIter h2 = h->twin();
+// 	HalfedgeIter h1 = h;
+// 	while (h1->next() != h) {
+// 		h1 = h1->next();
+// 	}
+// 	HalfedgeIter hn = h->next();
+// 	HalfedgeIter hnn = hn->next();
+// 	HalfedgeIter h2n = h2->next();
+// 	HalfedgeIter h2nn = h2n->next();
+// 	HalfedgeIter h6 = h2;
+// 	while (h6->next() != h2) {
+// 		h6 = h6->next();
+// 	}
+
+// 	VertexIter v0 = h->vertex();
+// 	VertexIter v1 = h2nn->vertex();
+// 	VertexIter v2 = h2->vertex();
+// 	VertexIter v3 = hnn->vertex();
+
+// 	FaceIter f0 = h->face();
+// 	FaceIter f1 = h2->face();
+
+// 	h1->next() = h2n;
+// 	h2n->next() = h;
+// 	h->next() = hnn;
+// 	h6->next() = hn;
+// 	hn->next() = h2;
+// 	h2->next() = h2nn;
+
+// 	h->vertex() = v1;
+// 	h2->vertex() = v3;
+
+// 	h2n->face() = f0;
+// 	hn->face() = f1;
+
+// 	h->edge() = e0;
+// 	h2->edge() = e0;
+
+// 	h->twin() = h2;
+// 	h2->twin() = h;
+
+// 	//update the vertex
+// 	v0->halfedge() = h2n;
+// 	v1->halfedge() = h2nn;
+// 	v2->halfedge() = hn;
+// 	v3->halfedge() = hnn;
+
+// 	//update the face
+// 	f0->halfedge() = h;
+// 	f1->halfedge() = h2;
+
+// 	e0->halfedge() = h;
+
+//   return e0;
+// }
 void HalfedgeMesh::subdivideQuad(bool useCatmullClark) {
   // Unlike the local mesh operations (like bevel or edge flip), we will perform
   // subdivision by splitting *all* faces into quads "simultaneously."  Rather
