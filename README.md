@@ -7,3 +7,9 @@ functionality of the program constitutes the majority of the coursework for
 
 Further information is available in the User Guide and Developer Manual, both
 available on the project wiki accessible via tab at the top of the Github.com UI.
+
+[Link to the wiki:](https://github.com/cmu462/Scotty3D/wiki)
+
+[developers guide](https://github.com/cmu462/Scotty3D/wiki/Developer-Manual)
+
+[users guide](https://github.com/cmu462/Scotty3D/wiki/User-Guide)
