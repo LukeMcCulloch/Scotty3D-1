@@ -407,6 +407,23 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	HalfedgeIter h7 = h2->twin();
 	HalfedgeIter h8 = h4->twin();
 	HalfedgeIter h9 = h5->twin();
+	//
+	// vertices (I go around the outer loop here)
+	VertexIter v0 = h7->vertex();
+	VertexIter v2 = h6->vertex();
+	VertexIter v1 = h9->vertex();
+	VertexIter v3 = h8->vertex();
+	//
+	// edges
+	e0 = h0-edge();
+	e1 = h1->edge();
+	e2 = h2->edge();
+	e3 = h4->edge();
+	e4 = h5-edge();
+	//
+	// faces
+	f0 = h0->face();
+	f1 = h3->face();
 
   return e0;
 }
