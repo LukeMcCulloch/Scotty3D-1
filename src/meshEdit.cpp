@@ -466,6 +466,8 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	h5->edge()   = e1;
 	h5->face()   = f1;
 	
+	// outside elements
+
 	h6->next()   = h6->next(); //constant (and unknown in our diagram)
 	h6->twin()   = h5;
 	h6->vertex() = v2; // constant
@@ -483,6 +485,13 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	h8->vertex() = v3; // constant
 	h8->edge()   = e3; // constant
 	h8->face()   = f0;
+	
+	h7->next()   = h7->next(); //constant (and unknown in our diagram)
+	h7->twin()   = h1;
+	h7->vertex() = v0; // constant
+	h7->edge()   = e2; // constant
+	h7->face()   = f0; // constant
+
 	//
 	// vertices (I go around the outer loop here)
 	//
