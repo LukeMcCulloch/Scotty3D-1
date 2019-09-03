@@ -390,8 +390,11 @@ class Halfedge : public HalfedgeElement {
    * For convenience, this method sets all of the
    * neighbors of this halfedge to the given values.
    */
-  void setNeighbors(HalfedgeIter next, HalfedgeIter twin, VertexIter vertex,
-                    EdgeIter edge, FaceIter face) {
+  void setNeighbors(HalfedgeIter next, 
+                    HalfedgeIter twin, 
+                    VertexIter vertex,
+                    EdgeIter edge, 
+                    FaceIter face) {
     _next = next;
     _twin = twin;
     _vertex = vertex;
