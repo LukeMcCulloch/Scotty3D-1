@@ -23,7 +23,7 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 	ON A HALFEDGE DATA STRUCTURE
 	CMU CS 15-462 (FALL 2015)
     -----------------------------------------------------
-    Before flip
+    Before split
 
 		                                  v1  
 										   o 
@@ -32,10 +32,11 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 			                         .     |
 			                        .      |
                                   .        |
-                                .          |
-		                      .     ^      |  ^ 
-		  	                e0    .        |  |h6
-	                      .     . h0       e1 |        
+                             .    .        |
+                            .   .          |
+		                h3.   .     ^      |  ^ 
+		                .   e0    .        |  |h4
+	                  v   .     . h0       e1 |        
 	      	            .     .          | |      
 		              .               h1 | |     
 			        .                    v |   
@@ -44,7 +45,7 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
               .         <------            | 
 			o--------------e2--------------o    
 				        ------>  
-		v0                h7                v2   
+		v0                h3                v2   
     -----------------------------------------------------
 	
     -----------------------------------------------------
