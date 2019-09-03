@@ -316,8 +316,9 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
   // that weren't actually invalidated). This is done for simplicity and conciseness.
 
   //
-  // NOTE: for tris only
-  //
+  // NOTE: -for tris only
+  //       -ignore any edge flip that would make the surface non-manifold
+  //       -what about low degree vertices, or very small meshes like tetrahedron?
 
   // There is a guide for this code 
   //  todo: point at it here
