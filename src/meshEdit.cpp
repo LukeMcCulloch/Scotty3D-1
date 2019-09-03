@@ -18,7 +18,7 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 	//cout << "test" << endl;
 
 	/*
-	See: 
+	See: http://462cmu.github.io/asst2_meshedit/
 	GUIDE TO IMPLEMENTING EDGE OPERATIONS
 	ON A HALFEDGE DATA STRUCTURE
 	CMU CS 15-462 (FALL 2015)
@@ -382,6 +382,9 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
   //  todo: point at it here
   /*
 	See: 
+	http://15462.courses.cs.cmu.edu/fall2015content/misc/HalfedgeEdgeOpImplementationGuide.pdf
+	and:
+	http://462cmu.github.io/asst2_meshedit/
 	GUIDE TO IMPLEMENTING EDGE OPERATIONS
 	ON A HALFEDGE DATA STRUCTURE
 	CMU CS 15-462 (FALL 2015)
