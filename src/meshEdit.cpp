@@ -500,11 +500,12 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	// h0->face()   = f0;
 	h0->setNeighbors(h1,h3,v3,e0,f0);
 
-	h1->next()   = h2;
-	h1->twin()   = h7;
-	h1->vertex() = v2; 
-	h1->edge()   = e2;
-	h1->face()   = f0;
+	// h1->next()   = h2;
+	// h1->twin()   = h7;
+	// h1->vertex() = v2; 
+	// h1->edge()   = e2;
+	// h1->face()   = f0;
+	h1->setNeighbors(h2,h7,v2,e2,f0);
 
 	h2->next()   = h0;
 	h2->twin()   = h8;
