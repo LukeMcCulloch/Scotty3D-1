@@ -7,15 +7,72 @@
 namespace CMU462 {
 
 VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
-  // text command: s
-  //
-  // TODO: (meshEdit)
-  // This method should split the given edge and return an iterator to the
-  // newly inserted vertex. The halfedge of this vertex should point along
-  // the edge that was split, rather than the new edges.
+	// text command: s
+	//
+	// TODO: (meshEdit)
+	// This method should split the given edge and return an iterator to the
+	// newly inserted vertex. The halfedge of this vertex should point along
+	// the edge that was split, rather than the new edges.
 
   	//check if both sides are triangles
 	//cout << "test" << endl;
+
+	/*
+	See: 
+	GUIDE TO IMPLEMENTING EDGE OPERATIONS
+	ON A HALFEDGE DATA STRUCTURE
+	CMU CS 15-462 (FALL 2015)
+    -----------------------------------------------------
+    Before flip
+
+		                                  v1  
+										   o 
+             	     		             . |
+            	                       .   |
+			                         .     |
+			                        .      |
+                                  .        |
+                                .          |
+		                      .     ^      |  ^ 
+		  	                e0    .        |  |h6
+	                      .     . h0       e1 |        
+	      	            .     .          | |      
+		              .               h1 | |     
+			        .                    v |   
+			      .               f0       |
+			    .           h2             | 
+              .         <------            | 
+			o--------------e2--------------o    
+				        ------>  
+		v0                h7                v2   
+    -----------------------------------------------------
+	
+    -----------------------------------------------------
+    After split
+
+		v3            h9                     v1  
+			        <-------
+			o---------------e4-------------o 
+            | .      ------->              |
+            |   .       h4                 |
+			|     .             f1         |
+			|      .                       |
+            |        .   ^           h5|   |
+            | ^        .   .  h3       |   |
+		    | |h2       e0   .         v   |  ^ 
+		 |	| |       .    .   .           |  |h6
+	   h8|  |           .   .              e1 |      
+	     v	|         h0  .   .            |      
+		    e3             v    .          |     
+			|                     .        |   
+			|     f0                 .     |
+			|               h1         .   | 
+            |           <------          . | 
+			o--------------e2--------------o    
+				        ------>  
+		v0                h7                v2   
+
+	*/    
 	if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
 	else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
 		HalfedgeIter h = e0->halfedge();
