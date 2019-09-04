@@ -22,58 +22,60 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 	GUIDE TO IMPLEMENTING EDGE OPERATIONS
 	ON A HALFEDGE DATA STRUCTURE
 	CMU CS 15-462 (FALL 2015)
-    -----------------------------------------------------
-    Before split
 
-		                                  v1  
-						      		          o 
-              	     		              . |
-            	                     .   |
-			                         .     |
-			                        .      |
-                               .        |
-                          .    .        |
-                         .   .          |
-		               h3.   .     ^      |  ^ 
-		               .   e0    .        |  |h5
-	                v   .     . h0       e1 |        
-	     	            .     .          | |      
-		             .               h1 | |     
-			        .                    v |   
-			      .               f0       |
-			    .           h2             | 
-           .         <------            | 
-			o--------------e2--------------o    
-				        ------>  
-		v0                h4                v2   
-    -----------------------------------------------------
-	
-    -----------------------------------------------------
-    After split
+   v3            h9                    v1  
+               <-------
+      o---------------e4-------------o 
+      |        ------->            / |
+      |           h5             /   |
+      |    f1                  /     |
+      |                       /      |
+      | ^              .    /        |
+      | |h4           .   /          |
+      | |         h3.   /  ^         |  ^ 
+      |	e3       .   e0 .           |  |h6
+  h8| |          v  /   . h0         e1 |        
+    v |           /    .           | |      
+      |         /               h1 | |     
+      |       /                    v |   
+      |     /              f0        |
+      |   /           h2             | 
+      | /         <------            | 
+      o--------------e2--------------o    
+                  ------>  
+   v0                h7                v2   
+   -----------------------------------------------------
+ahha,
 
-		                                  v1  
-										          o 
-             	     		              . | 
-            	                     .   |
-			                         .     |
-			                        .      |
-                      h3    .  .   f0   |
-                          .   .         |
-                         v  e0          |
-		                    .     ^      |  ^ 
-		                  .     .        |  |h5
-	                v3 o     . h0       e1 |        
-	      	         .   .            | |      
-		             .  .^   .  ^h2  h1 | |     
-			        .  .       e3   .    v |   
-			      e4 .  h4 f1  .   .  .    |
-			    .      h3     h5  .   .    | 
-           .     <------         v    . | 
-			o--------------e2--------------o    
-				        ------>  
-		v0                h4                v2   
+   -----------------------------------------------------
+   After split
+
+   v3            h9                    v1  
+               <-------
+      o---------------e4-------------o 
+      | \      ------->            / |
+      |  \        h5             /   |
+      |    \       f1      .   /     |
+      |      \           .    /      |
+      | ^      \       .    /        |
+      | |h4      \        /          |
+      | |         h3    /  ^         |  ^ 
+      |	e3           e0 .           |  |h6
+  h8| |             / \ . h0         e1 |        
+    v |       .   /    . \         | |      
+      |     .   /          \    h1 | |     
+      |    v  /              \     v |   
+      |     /              f0  \     |
+      |   /           h2         \   | 
+      | /         <------          \ | 
+      o--------------e2--------------o    
+                  ------>  
+   v0                h7                v2  
 
 	*/    
+
+   //Ignore requests to split boundary edges 
+   //   (just return immediately if either neighboring face is a boundary loop).
 	if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
 	else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
 		HalfedgeIter h = e0->halfedge();
@@ -278,7 +280,7 @@ ahha,
                   ------>  
    v0                h7                v2  
 
-// 	*/    
+// 	*/  
 // 	if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
 // 	else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
 // 		HalfedgeIter h = e0->halfedge();
