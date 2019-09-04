@@ -76,7 +76,7 @@ ahha,
 
    //Ignore requests to split boundary edges 
    //   (just return immediately if either neighboring face is a boundary loop).
-	if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
+	if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3) {return e0->halfedge()->vertex(); }
 	else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
 		HalfedgeIter h = e0->halfedge();
 		HalfedgeIter h0 = h->twin();
