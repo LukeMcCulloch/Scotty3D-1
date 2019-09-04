@@ -507,29 +507,33 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	// h1->face()   = f0;
 	h1->setNeighbors(h2,h7,v2,e2,f0);
 
-	h2->next()   = h0;
-	h2->twin()   = h8;
-	h2->vertex() = v0; 
-	h2->edge()   = e3;
-	h2->face()   = f0;
+	// h2->next()   = h0;
+	// h2->twin()   = h8;
+	// h2->vertex() = v0; 
+	// h2->edge()   = e3;
+	// h2->face()   = f0;
+	h2->setNeighbors(h0,h8,v0,e3,f0);
 
-	h3->next()   = h4;
-	h3->twin()   = h0;
-	h3->vertex() = v2; 
-	h3->edge()   = e0;
-	h3->face()   = f1;
+	// h3->next()   = h4;
+	// h3->twin()   = h0;
+	// h3->vertex() = v2; 
+	// h3->edge()   = e0;
+	// h3->face()   = f1;
+	h3->setNeighbors(h4,h0,v2,e0,f1);
 
-	h4->next()   = h5;
-	h4->twin()   = h9;
-	h4->vertex() = v3; 
-	h4->edge()   = e4;
-	h4->face()   = f1;
+	// h4->next()   = h5;
+	// h4->twin()   = h9;
+	// h4->vertex() = v3; 
+	// h4->edge()   = e4;
+	// h4->face()   = f1;
+	h4->setNeighbors(h5,h9,v3,e4,f1);
 
-	h5->next()   = h3;
-	h5->twin()   = h6;
-	h5->vertex() = v1; 
-	h5->edge()   = e1;
-	h5->face()   = f1;
+	// h5->next()   = h3;
+	// h5->twin()   = h6;
+	// h5->vertex() = v1; 
+	// h5->edge()   = e1;
+	// h5->face()   = f1;
+	h5->setNeighbors(h3,h6,v1,e1,f1);
 	
 	// outside elements
 
