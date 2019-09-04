@@ -513,26 +513,8 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	// h6->edge()   = e1; // constant
 	// h6->face()   = h6->face(); //constant and unknown
 	h6->setNeighbors(h6->next(),h5,v2,e1,h6->face());
-	
-	// h9->next()   = h9->next(); //constant and unknown 
-	// h9->twin()   = h4;
-	// h9->vertex() = v1; // constant
-	// h9->edge()   = e4; // constant
-	// h9->face()   = h9->face(); //constant and unknown
 	h9->setNeighbors(h9->next(),h4,v1,e4,h9->face());
-	
-	// h8->next()   = h8->next(); //constant and unknown 
-	// h8->twin()   = h2;
-	// h8->vertex() = v3; // constant
-	// h8->edge()   = e3; // constant
-	// h8->face()   = h8->face(); //constant and unknown
 	h8->setNeighbors(h8->next(),h2,v3,e3,h8->face());
-	
-	// h7->next()   = h7->next(); //constant and unknown 
-	// h7->twin()   = h1;
-	// h7->vertex() = v0; // constant
-	// h7->edge()   = e2; // constant
-	// h7->face()   = h7->face(); //constant and unknown
 	h7->setNeighbors(h7->next(),h1,v0,e2,h7->face());
 
 	// vertices 
