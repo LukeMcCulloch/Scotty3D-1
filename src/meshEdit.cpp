@@ -247,14 +247,14 @@ ahha,
 		FaceIter fnew = newFace();
 
 		//2 new edges due to boundary
-        EdgeIter e5 = newEdge();
-        EdgeIter e6 = newEdge();	
+      EdgeIter e5 = newEdge();
+      EdgeIter e6 = newEdge();	
 
 		//4 new halfedges due to boundary
-		vector<HalfedgeIter> new_h;
-		for (size_t i = 0; i < 4; i++) {
-			new_h.push_back(newHalfedge());
-		}
+      HalfedgeIter h10 = newHalfedge();
+      HalfedgeIter h11 = newHalfedge();
+      HalfedgeIter h12 = newHalfedge();
+      HalfedgeIter h13 = newHalfedge();
 
 		//get old halfedges,faces and vertices
 		HalfedgeIter h2 = h0->next();
@@ -275,22 +275,22 @@ ahha,
 
 		//assign value to new elems
 		v4->halfedge() = h0;
-		e5->halfedge() = new_h[0];
-		e6->halfedge() = new_h[2];
+		e5->halfedge() = h10;
+		e6->halfedge() = h12;
 		fnew->halfedge() = h3;
-		new_h[0]->setNeighbors(h3, new_h[1], v4, e5, fnew);
-		new_h[1]->setNeighbors(h0, new_h[0], v2, e5, f0);
-		new_h[2]->setNeighbors(new_h[0], new_h[3], v0, e6, fnew);
-		new_h[3]->setNeighbors(h1->next(), new_h[2], v4, e6, h1->face());
+		h10->setNeighbors(h3, h11, v4, e5, fnew);
+		h11->setNeighbors(h0, h10, v2, e5, f0);
+		h12->setNeighbors(h10, h13, v0, e6, fnew);
+		h13->setNeighbors(h1->next(), h12, v4, e6, h1->face());
 
 		//reassign old value
 		e0->halfedge() = h0;
 		f0->halfedge() = h2;
 		h0->setNeighbors(h2, h1, v4, e0, f0);
-		h1->setNeighbors(new_h[3], h0, v1, e0, h1->face());
-		h2->next() = new_h[1];
+		h1->setNeighbors(h13, h0, v1, e0, h1->face());
+		h2->next() = h11;
 		h2->face() = f0;
-		h3->next() = new_h[2];
+		h3->next() = h12;
 		h3->face() = fnew;
 		
 		return v4;
@@ -321,13 +321,15 @@ ahha,
 
 	//2 new faces (we already had 2)
 	FaceIter f2 = newFace();
-    FaceIter f3 = newFace();
+   FaceIter f3 = newFace();
 
 	//6 new halfedges (2 for each new edge)
-	vector<HalfedgeIter> new_h;
-	for (size_t i = 0; i < 6; i++) {
-		new_h.push_back(newHalfedge());
-	}
+   HalfedgeIter h10 = newHalfedge();
+   HalfedgeIter h11 = newHalfedge();
+   HalfedgeIter h12 = newHalfedge();
+   HalfedgeIter h13 = newHalfedge();
+   HalfedgeIter h14 = newHalfedge();
+   HalfedgeIter h15 = newHalfedge();
 
 	//get old halfedges,faces and vertices
 	HalfedgeIter h2 = h0->next();
@@ -345,30 +347,30 @@ ahha,
 
 	//assign value to new elems
 	v4->halfedge() = h0;
-	e5->halfedge() = new_h[1];
-	e6->halfedge() = new_h[3];
-	e7->halfedge() = new_h[5];
+	e5->halfedge() = h11;
+	e6->halfedge() = h13;
+	e7->halfedge() = h15;
 	f2->halfedge() = h4;
 	f3->halfedge() = h3;
 
-	new_h[0]->setNeighbors(h0, new_h[5], v3, e7, f0);
-	new_h[1]->setNeighbors(h5, new_h[2], v4, e5, f1);
-	new_h[2]->setNeighbors(new_h[3], new_h[1], v1, e5, f2);
-	new_h[3]->setNeighbors(h4, new_h[4], v4, e6, f2);
-	new_h[4]->setNeighbors(new_h[5], new_h[3], v0, e6, f3);
-	new_h[5]->setNeighbors(h3, new_h[0], v4, e7, f3);
+	h10->setNeighbors(h0, h15, v3, e7, f0);
+	h11->setNeighbors(h5, h12, v4, e5, f1);
+	h12->setNeighbors(h13, h11, v1, e5, f2);
+	h13->setNeighbors(h4, h14, v4, e6, f2);
+	h14->setNeighbors(h15, h13, v0, e6, f3);
+	h15->setNeighbors(h3, h10, v4, e7, f3);
 
 	//reassign value to old elems
 	e0->halfedge() = h0;
 	f0->halfedge() = h2;
 	f1->halfedge() = h5;
 	h0->setNeighbors(h2, h1, v4, e0, f0);
-	h1->setNeighbors(new_h[1], h0, v2, e0, f1);
-	h2->next() = new_h[0];
+	h1->setNeighbors(h11, h0, v2, e0, f1);
+	h2->next() = h10;
 	h2->face() = f0;
-	h3->next() = new_h[4];
+	h3->next() = h14;
 	h3->face() = f3;
-	h4->next() = new_h[2];
+	h4->next() = h12;
 	h4->face() = f2;
 	h5->next() = h1;
 	h5->face() = f1;
