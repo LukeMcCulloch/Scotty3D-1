@@ -360,7 +360,7 @@ ahha,
 	h14->setNeighbors(h15, h13, v0, e6, f3);
 	h15->setNeighbors(h3, h10, v4, e7, f3);
 
-	//reassign value to old elems
+	//reassign value to old elements
 	e0->halfedge() = h0;
 	f0->halfedge() = h2;
 	f1->halfedge() = h5;
