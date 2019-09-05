@@ -233,23 +233,25 @@ ahha,
                   ------>  
    v0                h7                v2  
 
-	*/  
+	*/ 
    if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
 	else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
 		HalfedgeIter h0 = e0->halfedge();
 		HalfedgeIter h1 = h0->twin();
 
 		//1 new vertex
-		VertexIter new_v = newVertex();
-		new_v->position = e0->centroid();
-		//1 new faces due to boundary
-		FaceIter newf = newFace();
+		VertexIter v4 = newVertex();
+		v4->position = e0->centroid();
 
-		vector<HalfedgeIter> new_h;
+		//1 new faces due to boundary
+		FaceIter fnew = newFace();
+
 		//2 new edges due to boundary
         EdgeIter e5 = newEdge();
-        EdgeIter e6 = newEdge();		
+        EdgeIter e6 = newEdge();	
+
 		//4 new halfedges due to boundary
+		vector<HalfedgeIter> new_h;
 		for (size_t i = 0; i < 4; i++) {
 			new_h.push_back(newHalfedge());
 		}
@@ -272,26 +274,26 @@ ahha,
 		//cout << "ho->face: " << &(h1->face()) << endl;
 
 		//assign value to new elems
-		new_v->halfedge() = h0;
+		v4->halfedge() = h0;
 		e5->halfedge() = new_h[0];
 		e6->halfedge() = new_h[2];
-		newf->halfedge() = h3;
-		new_h[0]->setNeighbors(h3, new_h[1], new_v, e5, newf);
+		fnew->halfedge() = h3;
+		new_h[0]->setNeighbors(h3, new_h[1], v4, e5, fnew);
 		new_h[1]->setNeighbors(h0, new_h[0], v2, e5, f0);
-		new_h[2]->setNeighbors(new_h[0], new_h[3], v0, e6, newf);
-		new_h[3]->setNeighbors(h1->next(), new_h[2], new_v, e6, h1->face());
+		new_h[2]->setNeighbors(new_h[0], new_h[3], v0, e6, fnew);
+		new_h[3]->setNeighbors(h1->next(), new_h[2], v4, e6, h1->face());
 
 		//reassign old value
 		e0->halfedge() = h0;
 		f0->halfedge() = h2;
-		h0->setNeighbors(h2, h1, new_v, e0, f0);
+		h0->setNeighbors(h2, h1, v4, e0, f0);
 		h1->setNeighbors(new_h[3], h0, v1, e0, h1->face());
 		h2->next() = new_h[1];
 		h2->face() = f0;
 		h3->next() = new_h[2];
-		h3->face() = newf;
+		h3->face() = fnew;
 		
-		return new_v;
+		return v4;
 	}
 
 	if (e0->halfedge()->face()->degree() != 3 && e0->halfedge()->twin()->face()->degree() != 3) {
@@ -308,21 +310,21 @@ ahha,
 	HalfedgeIter h1 = h0->twin();
 
 	//initialize new vertex
-	VertexIter new_v = newVertex();
-	new_v->position = e0->centroid();
+	VertexIter v4 = newVertex();
+	v4->position = e0->centroid();
 
 	//initialize new edge, face and halfedge
-	vector<FaceIter> new_f;
-	vector<HalfedgeIter> new_h;
-
 	//3 new edges 
 	EdgeIter e5 = newEdge();
 	EdgeIter e6 = newEdge();
 	EdgeIter e7 = newEdge();
+
 	//2 new faces (we already had 2)
-	new_f.push_back(newFace());
-	new_f.push_back(newFace());
+	FaceIter f2 = newFace();
+    FaceIter f3 = newFace();
+
 	//6 new halfedges (2 for each new edge)
+	vector<HalfedgeIter> new_h;
 	for (size_t i = 0; i < 6; i++) {
 		new_h.push_back(newHalfedge());
 	}
@@ -342,36 +344,36 @@ ahha,
 	VertexIter v3 = h3->vertex();
 
 	//assign value to new elems
-	new_v->halfedge() = h0;
+	v4->halfedge() = h0;
 	e5->halfedge() = new_h[1];
 	e6->halfedge() = new_h[3];
 	e7->halfedge() = new_h[5];
-	new_f[0]->halfedge() = h4;
-	new_f[1]->halfedge() = h3;
+	f2->halfedge() = h4;
+	f3->halfedge() = h3;
 
 	new_h[0]->setNeighbors(h0, new_h[5], v3, e7, f0);
-	new_h[1]->setNeighbors(h5, new_h[2], new_v, e5, f1);
-	new_h[2]->setNeighbors(new_h[3], new_h[1], v1, e5, new_f[0]);
-	new_h[3]->setNeighbors(h4, new_h[4], new_v, e6, new_f[0]);
-	new_h[4]->setNeighbors(new_h[5], new_h[3], v0, e6, new_f[1]);
-	new_h[5]->setNeighbors(h3, new_h[0], new_v, e7, new_f[1]);
+	new_h[1]->setNeighbors(h5, new_h[2], v4, e5, f1);
+	new_h[2]->setNeighbors(new_h[3], new_h[1], v1, e5, f2);
+	new_h[3]->setNeighbors(h4, new_h[4], v4, e6, f2);
+	new_h[4]->setNeighbors(new_h[5], new_h[3], v0, e6, f3);
+	new_h[5]->setNeighbors(h3, new_h[0], v4, e7, f3);
 
 	//reassign value to old elems
 	e0->halfedge() = h0;
 	f0->halfedge() = h2;
 	f1->halfedge() = h5;
-	h0->setNeighbors(h2, h1, new_v, e0, f0);
+	h0->setNeighbors(h2, h1, v4, e0, f0);
 	h1->setNeighbors(new_h[1], h0, v2, e0, f1);
 	h2->next() = new_h[0];
 	h2->face() = f0;
 	h3->next() = new_h[4];
-	h3->face() = new_f[1];
+	h3->face() = f3;
 	h4->next() = new_h[2];
-	h4->face() = new_f[0];
+	h4->face() = f2;
 	h5->next() = h1;
 	h5->face() = f1;
 	
-	return new_v;
+	return v4;
 }
 // VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 // 	// text command: s
