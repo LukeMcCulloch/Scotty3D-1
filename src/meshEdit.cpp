@@ -115,9 +115,11 @@ ahha,
 	new_e.push_back(newEdge());  //new_e[0] = e5
 	new_e.push_back(newEdge());  //new_e[1] = e6
 	new_e.push_back(newEdge());  //new_e[2] = e7
+
 	//2 new faces (we already had f0 and f1) now we add f2 and f3
 	new_f.push_back(newFace());   //new_f[0] = f2
 	new_f.push_back(newFace());   //new_f[1] = f3
+
 	//6 new halfedges (2 for each new edge)
 	for (size_t i = 0; i < 6; i++) {
 		new_h.push_back(newHalfedge());
@@ -126,9 +128,10 @@ ahha,
 
    //assign value to new elems
    v4->halfedge() = h0;
-   new_e[0]->halfedge() = new_h[1]; // e5->halfedge = new_h[1] = h11
-   new_e[1]->halfedge() = new_h[4]; // e6->halfedge = new_h[4] = h14
-   new_e[2]->halfedge() = new_h[3]; // e7->halfedge = new_h[3] = h13
+   new_e[0]->halfedge() = new_h[1]; // e5->halfedge = new_h[1] = h10
+   new_e[1]->halfedge() = new_h[4]; // e6->halfedge = new_h[4] = h11
+   new_e[2]->halfedge() = new_h[3]; // e7->halfedge = new_h[3] = h12
+
    new_f[0]->halfedge() = h3;       // f2->halfedge =          = h14
    new_f[1]->halfedge() = h2;       // f3->halfedge =          = h15
 
@@ -147,6 +150,8 @@ ahha,
    */
 
    //reassign value to old elems
+   v1->halfedge() = h3;
+   
    e0->halfedge() = h;
    f0->halfedge() = h1;
    f1->halfedge() = h4;
