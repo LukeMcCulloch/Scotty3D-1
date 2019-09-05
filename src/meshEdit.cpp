@@ -112,10 +112,10 @@ ahha,
 	vector<HalfedgeIter> new_h;
 
 	//3 new edges 
-	new_e.push_back(newEdge());
-	new_e.push_back(newEdge());
-	new_e.push_back(newEdge());
-	//2 new faces (we already had 2) -> 4 total
+	new_e.push_back(newEdge());  //new_e[0] = e5
+	new_e.push_back(newEdge());  //new_e[1] = e6
+	new_e.push_back(newEdge());  //new_e[2] = e7
+	//2 new faces (we already had f0 and f1) now we add f2 and f3
 	new_f.push_back(newFace());   //new_f[0] = f2
 	new_f.push_back(newFace());   //new_f[1] = f3
 	//6 new halfedges (2 for each new edge)
@@ -127,17 +127,24 @@ ahha,
    //assign value to new elems
    v4->halfedge() = h0;
    new_e[0]->halfedge() = new_h[1]; // e5->halfedge = new_h[1] = h11
-   new_e[1]->halfedge() = new_h[4]; // e6->halfedge = new_h[1] = h14
-   new_e[2]->halfedge() = new_h[3]; // e7->halfedge = new_h[1] = h13
-   new_f[0]->halfedge() = h3;       // f1->halfedge =          = h3
-   new_f[1]->halfedge() = h2;       // f2->halfedge =          = h3
+   new_e[1]->halfedge() = new_h[4]; // e6->halfedge = new_h[4] = h14
+   new_e[2]->halfedge() = new_h[3]; // e7->halfedge = new_h[3] = h13
+   new_f[0]->halfedge() = h3;       // f2->halfedge =          = h14
+   new_f[1]->halfedge() = h2;       // f3->halfedge =          = h15
 
-   new_h[0]->setNeighbors(h, new_h[5], v3, new_e[2], f0);
-   new_h[1]->setNeighbors(h4, new_h[2], v4, new_e[0], f1);
-   new_h[2]->setNeighbors(new_h[3], new_h[1], v1, new_e[0], new_f[0]);
-   new_h[3]->setNeighbors(h3, new_h[4], v4, new_e[1], new_f[0]);
-   new_h[4]->setNeighbors(new_h[5], new_h[3], v0, new_e[1], new_f[1]);
-   new_h[5]->setNeighbors(h2, new_h[0], v4, new_e[2], new_f[1]);
+   new_h[0]->setNeighbors();
+   new_h[1]->setNeighbors();
+   new_h[2]->setNeighbors();
+   new_h[3]->setNeighbors();
+   new_h[4]->setNeighbors();
+   new_h[5]->setNeighbors();
+   /*
+  void setNeighbors(HalfedgeIter next, 
+                    HalfedgeIter twin, 
+                    VertexIter vertex,
+                    EdgeIter edge, 
+                    FaceIter face) {
+   */
 
    //reassign value to old elems
    e0->halfedge() = h;
@@ -627,7 +634,7 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 	HalfedgeIter h8 = h4->twin();
 	HalfedgeIter h9 = h5->twin();
 	//
-	// vertices (always pull from the interior)
+	// vertices (always get vertices from the interior halfedges)
 	VertexIter v0 = h0->vertex();
 	VertexIter v1 = h3->vertex();
 	VertexIter v2 = h2->vertex();
@@ -677,12 +684,16 @@ EdgeIter HalfedgeMesh::flipEdge(EdgeIter e0) {
 
 	// vertices 
 
-	v0->halfedge() = h2; //not safe to leave as it was!
-	v1->halfedge() = h5; //base on interior halfedge connectivity
-	v2->halfedge() = h3; // change from h2 to h3 switched the face it is "in"
+	v0->halfedge() = h2; //this is now the only interior halfedge running away from v0
+	v1->halfedge() = h5; // similar to v0. chose based on interior halfedge connectivity
+	v2->halfedge() = h3; //change from h2 to h3 switched the face it is "in"
 	v3->halfedge() = h0;// switched face it is "in" as well
-	// remember, half edges contain all the connectivity
+	
+   // remember, half edges contain all the connectivity
 	// other elements are more  arbitrary
+   
+   // v2->halfedge() = h3; // still works in easy tests
+	// v3->halfedge() = h1; // still works in easy tests
 
 	// edges (sticking with interior) bad assumption
 
