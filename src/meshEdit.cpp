@@ -245,11 +245,8 @@ ahha,
 		//1 new faces due to boundary
 		FaceIter newf = newFace();
 
-		//vector<EdgeIter> new_e;
 		vector<HalfedgeIter> new_h;
 		//2 new edges due to boundary
-		//new_e.push_back(newEdge());
-		//new_e.push_back(newEdge());
         EdgeIter e5 = newEdge();
         EdgeIter e6 = newEdge();		
 		//4 new halfedges due to boundary
@@ -315,14 +312,10 @@ ahha,
 	new_v->position = e0->centroid();
 
 	//initialize new edge, face and halfedge
-	//vector<EdgeIter> new_e;
 	vector<FaceIter> new_f;
 	vector<HalfedgeIter> new_h;
 
 	//3 new edges 
-	//new_e.push_back(newEdge());
-	//new_e.push_back(newEdge());
-	//new_e.push_back(newEdge());
 	EdgeIter e5 = newEdge();
 	EdgeIter e6 = newEdge();
 	EdgeIter e7 = newEdge();
