@@ -124,23 +124,31 @@ ahha,
 	for (size_t i = 0; i < 6; i++) {
 		new_h.push_back(newHalfedge());
 	}
-
+   /*{
+      new_h[0] : h10
+      new_h[1] : h11
+      new_h[2] : h12
+      new_h[3] : h13
+      new_h[4] : h14
+      new_h[5] : h15
+   }
+   */
 
    //assign value to new elems
    v4->halfedge() = h0;
-   new_e[0]->halfedge() = new_h[1]; // e5->halfedge = new_h[1] = h10
-   new_e[1]->halfedge() = new_h[4]; // e6->halfedge = new_h[4] = h11
-   new_e[2]->halfedge() = new_h[3]; // e7->halfedge = new_h[3] = h12
+   new_e[0]->halfedge() = new_h[0]; // e5->halfedge = new_h[1] aka h10
+   new_e[1]->halfedge() = new_h[3]; // e6->halfedge = new_h[4] aka h13
+   new_e[2]->halfedge() = new_h[4]; // e7->halfedge = new_h[3] aka h14
 
-   new_f[0]->halfedge() = h3;       // f2->halfedge =          = h14
-   new_f[1]->halfedge() = h2;       // f3->halfedge =          = h15
+   new_f[0]->halfedge() = new_h[1]; // f2->halfedge = new_h[1] = h11
+   new_f[1]->halfedge() = new_h[0]; // f3->halfedge = new_h[0] = h10
 
-   new_h[0]->setNeighbors();
-   new_h[1]->setNeighbors();
-   new_h[2]->setNeighbors();
-   new_h[3]->setNeighbors();
-   new_h[4]->setNeighbors();
-   new_h[5]->setNeighbors();
+   new_h[0]->setNeighbors(h4, new_h[1], v4, new_e[0], new_f[1]);
+   new_h[1]->setNeighbors(new_h[4], new_h[10], v0, new_e[0], new_f[0]);
+   new_h[2]->setNeighbors(new_h[0], new_h[3], v3, new_e[1], new_f[1]);
+   new_h[3]->setNeighbors(h5, new_h[2], v4, new_e[1], f1);
+   new_h[4]->setNeighbors(h2, new_h[5], v4, new_e[2], new_f[0]);
+   new_h[5]->setNeighbors(h0, new_h[4], v4, new_e[2], f0);
    /*
   void setNeighbors(HalfedgeIter next, 
                     HalfedgeIter twin, 
@@ -150,21 +158,6 @@ ahha,
    */
 
    //reassign value to old elems
-   v1->halfedge() = h3;
-   
-   e0->halfedge() = h;
-   f0->halfedge() = h1;
-   f1->halfedge() = h4;
-   h->setNeighbors(h1, h0, v4, e0, f0);
-   h0->setNeighbors(new_h[1], h, v2, e0, f1);
-   h1->next() = new_h[0];
-   h1->face() = f0;
-   h2->next() = new_h[4];
-   h2->face() = new_f[1];
-   h3->next() = new_h[2];
-   h3->face() = new_f[0];
-   h4->next() = h0;
-   h4->face() = f1;
 
    return v4;
 }
