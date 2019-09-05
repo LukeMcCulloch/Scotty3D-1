@@ -240,9 +240,9 @@ ahha,
 	//
 	// halfedges
 	// HalfedgeIter h0 = e0->halfedge();
-	// HalfedgeIter h1 = h0->next();
+	// HalfedgeIter h1 = h0->next(); // h1=h0->twin() below
 	// HalfedgeIter h2 = h1->next();
-	// HalfedgeIter h3 = h0->twin(); //
+	// HalfedgeIter h3 = h0->twin(); // 
 	// HalfedgeIter h4 = h3->next();
 	// HalfedgeIter h5 = h4->next();
 	// HalfedgeIter h6 = h1->twin();
