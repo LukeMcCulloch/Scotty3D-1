@@ -234,6 +234,39 @@ ahha,
    v0                h7                v2  
 
 	*/ 
+
+   //-----------------------------------------------------
+	// collect elements
+	//
+	// halfedges
+	// HalfedgeIter h0 = e0->halfedge();
+	// HalfedgeIter h1 = h0->next();
+	// HalfedgeIter h2 = h1->next();
+	// HalfedgeIter h3 = h0->twin(); //
+	// HalfedgeIter h4 = h3->next();
+	// HalfedgeIter h5 = h4->next();
+	// HalfedgeIter h6 = h1->twin();
+	// HalfedgeIter h7 = h2->twin();
+	// HalfedgeIter h8 = h4->twin();
+	// HalfedgeIter h9 = h5->twin();
+	// //
+	// // vertices (always pull from the interior)
+	// VertexIter v0 = h0->vertex();
+	// VertexIter v1 = h3->vertex();
+	// VertexIter v2 = h2->vertex();
+	// VertexIter v3 = h5->vertex();
+	// //
+	// // edges
+	// //e0 = h0->edge(); passed in.  do not redeclare
+	// EdgeIter e1 = h1->edge();
+	// EdgeIter e2 = h2->edge();
+	// EdgeIter e3 = h4->edge();
+	// EdgeIter e4 = h5->edge();
+	// //
+	// // faces (pick the only unambiguous elements)
+	// FaceIter f0 = h0->face();
+	// FaceIter f1 = h3->face();
+
    if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
 	else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
 		HalfedgeIter h0 = e0->halfedge();
