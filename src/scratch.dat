@@ -1,4 +1,37 @@
 
+
+   //-----------------------------------------------------
+	// collect elements
+	//
+	// halfedges
+	// HalfedgeIter h0 = e0->halfedge();
+	// HalfedgeIter h1 = h0->next(); // h1=h0->twin() below
+	// HalfedgeIter h2 = h1->next();
+	// HalfedgeIter h3 = h0->twin(); // 
+	// HalfedgeIter h4 = h3->next();
+	// HalfedgeIter h5 = h4->next();
+	// HalfedgeIter h6 = h1->twin();
+	// HalfedgeIter h7 = h2->twin();
+	// HalfedgeIter h8 = h4->twin();
+	// HalfedgeIter h9 = h5->twin();
+	// //
+	// // vertices (always pull from the interior)
+	// VertexIter v0 = h0->vertex();
+	// VertexIter v1 = h3->vertex();
+	// VertexIter v2 = h2->vertex();
+	// VertexIter v3 = h5->vertex();
+	// //
+	// // edges
+	// //e0 = h0->edge(); passed in.  do not redeclare
+	// EdgeIter e1 = h1->edge();
+	// EdgeIter e2 = h2->edge();
+	// EdgeIter e3 = h4->edge();
+	// EdgeIter e4 = h5->edge();
+	// //
+	// // faces (pick the only unambiguous elements)
+	// FaceIter f0 = h0->face();
+	// FaceIter f1 = h3->face();
+
    if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
 	else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
 		HalfedgeIter h0 = e0->halfedge();
@@ -12,14 +45,14 @@
 		FaceIter fnew = newFace();
 
 		//2 new edges due to boundary
-        EdgeIter e5 = newEdge();
-        EdgeIter e6 = newEdge();	
+      EdgeIter e5 = newEdge();
+      EdgeIter e6 = newEdge();	
 
 		//4 new halfedges due to boundary
-        HalfedgeIter h10 = newHalfedge();
-        HalfedgeIter h11 = newHalfedge();
-        HalfedgeIter h12 = newHalfedge();
-        HalfedgeIter h13 = newHalfedge();
+      HalfedgeIter h10 = newHalfedge();
+      HalfedgeIter h11 = newHalfedge();
+      HalfedgeIter h12 = newHalfedge();
+      HalfedgeIter h13 = newHalfedge();
 
 		//get old halfedges,faces and vertices
 		HalfedgeIter h2 = h0->next();
@@ -38,7 +71,7 @@
 		//cout << "f0: " << &(h0->face()) << endl;
 		//cout << "ho->face: " << &(h1->face()) << endl;
 
-		//assign value to new elements
+		//assign value to new elems
 		v4->halfedge() = h0;
 		e5->halfedge() = h10;
 		e6->halfedge() = h12;
@@ -86,15 +119,15 @@
 
 	//2 new faces (we already had 2)
 	FaceIter f2 = newFace();
-    FaceIter f3 = newFace();
+   FaceIter f3 = newFace();
 
 	//6 new halfedges (2 for each new edge)
-    HalfedgeIter h10 = newHalfedge();
-    HalfedgeIter h11 = newHalfedge();
-    HalfedgeIter h12 = newHalfedge();
-    HalfedgeIter h13 = newHalfedge();
-    HalfedgeIter h14 = newHalfedge();
-    HalfedgeIter h15 = newHalfedge();
+   HalfedgeIter h10 = newHalfedge();
+   HalfedgeIter h11 = newHalfedge();
+   HalfedgeIter h12 = newHalfedge();
+   HalfedgeIter h13 = newHalfedge();
+   HalfedgeIter h14 = newHalfedge();
+   HalfedgeIter h15 = newHalfedge();
 
 	//get old halfedges,faces and vertices
 	HalfedgeIter h2 = h0->next();
@@ -125,7 +158,7 @@
 	h14->setNeighbors(h15, h13, v0, e6, f3);
 	h15->setNeighbors(h3, h10, v4, e7, f3);
 
-	//reassign value to old elems
+	//reassign value to old elements
 	e0->halfedge() = h0;
 	f0->halfedge() = h2;
 	f1->halfedge() = h5;
