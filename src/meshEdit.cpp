@@ -221,7 +221,7 @@ ahha,
       | ^      \       .    /        |
       | |h4      \        /          |
       | |         h3    /  ^         |  ^ 
-      |	e3           e0 .           |  |h6
+    |	e3           e0 .              |  |h6
   h8| |             / \ . h0         e1 |        
     v |       .   /    . \         | |      
       |     .   /          \    h1 | |     
@@ -233,100 +233,100 @@ ahha,
                   ------>  
    v0                h7                v2  
 
-	*/ 
+   */ 
 
    //-----------------------------------------------------
-	// collect elements
-	//
-	// halfedges
-	// HalfedgeIter h0 = e0->halfedge();
-	// HalfedgeIter h1 = h0->next(); // h1=h0->twin() below
-	// HalfedgeIter h2 = h1->next();
-	// HalfedgeIter h3 = h0->twin(); // 
-	// HalfedgeIter h4 = h3->next();
-	// HalfedgeIter h5 = h4->next();
-	// HalfedgeIter h6 = h1->twin();
-	// HalfedgeIter h7 = h2->twin();
-	// HalfedgeIter h8 = h4->twin();
-	// HalfedgeIter h9 = h5->twin();
-	// //
-	// // vertices (always pull from the interior)
-	// VertexIter v0 = h0->vertex();
-	// VertexIter v1 = h3->vertex();
-	// VertexIter v2 = h2->vertex();
-	// VertexIter v3 = h5->vertex();
-	// //
-	// // edges
-	// //e0 = h0->edge(); passed in.  do not redeclare
-	// EdgeIter e1 = h1->edge();
-	// EdgeIter e2 = h2->edge();
-	// EdgeIter e3 = h4->edge();
-	// EdgeIter e4 = h5->edge();
-	// //
-	// // faces (pick the only unambiguous elements)
-	// FaceIter f0 = h0->face();
-	// FaceIter f1 = h3->face();
+   // collect elements
+   //
+   // halfedges
+   // HalfedgeIter h0 = e0->halfedge();
+   // HalfedgeIter h1 = h0->next(); // h1=h0->twin() below
+   // HalfedgeIter h2 = h1->next();
+   // HalfedgeIter h3 = h0->twin(); // 
+   // HalfedgeIter h4 = h3->next();
+   // HalfedgeIter h5 = h4->next();
+   // HalfedgeIter h6 = h1->twin();
+   // HalfedgeIter h7 = h2->twin();
+   // HalfedgeIter h8 = h4->twin();
+   // HalfedgeIter h9 = h5->twin();
+   // //
+   // // vertices (always pull from the interior)
+   // VertexIter v0 = h0->vertex();
+   // VertexIter v1 = h3->vertex();
+   // VertexIter v2 = h2->vertex();
+   // VertexIter v3 = h5->vertex();
+   // //
+   // // edges
+   // //e0 = h0->edge(); passed in.  do not redeclare
+   // EdgeIter e1 = h1->edge();
+   // EdgeIter e2 = h2->edge();
+   // EdgeIter e3 = h4->edge();
+   // EdgeIter e4 = h5->edge();
+   // //
+   // // faces (pick the only unambiguous elements)
+   // FaceIter f0 = h0->face();
+   // FaceIter f1 = h3->face();
 
    if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
-	else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
-		HalfedgeIter h0 = e0->halfedge();
-		HalfedgeIter h1 = h0->twin();
+   else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
+      HalfedgeIter h0 = e0->halfedge();
+      HalfedgeIter h1 = h0->twin();
 
-		//1 new vertex
-		VertexIter v4 = newVertex();
-		v4->position = e0->centroid();
+      //1 new vertex
+      VertexIter v4 = newVertex();
+      v4->position = e0->centroid();
 
-		//1 new faces due to boundary
-		FaceIter fnew = newFace();
+      //1 new faces due to boundary
+      FaceIter fnew = newFace();
 
-		//2 new edges due to boundary
+      //2 new edges due to boundary
       EdgeIter e5 = newEdge();
       EdgeIter e6 = newEdge();	
 
-		//4 new halfedges due to boundary
+      //4 new halfedges due to boundary
       HalfedgeIter h10 = newHalfedge();
       HalfedgeIter h11 = newHalfedge();
       HalfedgeIter h12 = newHalfedge();
       HalfedgeIter h13 = newHalfedge();
 
-		//get old halfedges,faces and vertices
-		HalfedgeIter h2 = h0->next();
-		HalfedgeIter h3 = h2->next();
+      //get old halfedges,faces and vertices
+      HalfedgeIter h2 = h0->next();
+      HalfedgeIter h3 = h2->next();
 
-		FaceIter f0 = h0->face();
+      FaceIter f0 = h0->face();
 
-		VertexIter v0 = h0->vertex();
-		VertexIter v1 = h2->vertex();
-		VertexIter v2 = h3->vertex();
-		//cout << "e0: " << &e0 << endl;
-		//cout << "h: " << &(e0->halfedge()) << endl;
-		//cout << "v0: " << &(h0->vertex()) << endl;
-		//cout << "v1: " << &(h2->vertex()) << endl;
-		//cout << "v2: " << &(h3->vertex()) << endl;
-		//cout << "f0: " << &(h0->face()) << endl;
-		//cout << "ho->face: " << &(h1->face()) << endl;
+      VertexIter v0 = h0->vertex();
+      VertexIter v1 = h2->vertex();
+      VertexIter v2 = h3->vertex();
+      //cout << "e0: " << &e0 << endl;
+      //cout << "h: " << &(e0->halfedge()) << endl;
+      //cout << "v0: " << &(h0->vertex()) << endl;
+      //cout << "v1: " << &(h2->vertex()) << endl;
+      //cout << "v2: " << &(h3->vertex()) << endl;
+      //cout << "f0: " << &(h0->face()) << endl;
+      //cout << "ho->face: " << &(h1->face()) << endl;
 
-		//assign value to new elems
-		v4->halfedge() = h0;
-		e5->halfedge() = h10;
-		e6->halfedge() = h12;
-		fnew->halfedge() = h3;
-		h10->setNeighbors(h3, h11, v4, e5, fnew);
-		h11->setNeighbors(h0, h10, v2, e5, f0);
-		h12->setNeighbors(h10, h13, v0, e6, fnew);
-		h13->setNeighbors(h1->next(), h12, v4, e6, h1->face());
+      //assign value to new elems
+      v4->halfedge() = h0;
+      e5->halfedge() = h10;
+      e6->halfedge() = h12;
+      fnew->halfedge() = h3;
+      h10->setNeighbors(h3, h11, v4, e5, fnew);
+      h11->setNeighbors(h0, h10, v2, e5, f0);
+      h12->setNeighbors(h10, h13, v0, e6, fnew);
+      h13->setNeighbors(h1->next(), h12, v4, e6, h1->face());
 
-		//reassign old value
-		e0->halfedge() = h0;
-		f0->halfedge() = h2;
-		h0->setNeighbors(h2, h1, v4, e0, f0);
-		h1->setNeighbors(h13, h0, v1, e0, h1->face());
-		h2->next() = h11;
-		h2->face() = f0;
-		h3->next() = h12;
-		h3->face() = fnew;
-		
-		return v4;
+      //reassign old value
+      e0->halfedge() = h0;
+      f0->halfedge() = h2;
+      h0->setNeighbors(h2, h1, v4, e0, f0);
+      h1->setNeighbors(h13, h0, v1, e0, h1->face());
+      h2->next() = h11;
+      h2->face() = f0;
+      h3->next() = h12;
+      h3->face() = fnew;
+      
+      return v4;
 	}
 
 	if (e0->halfedge()->face()->degree() != 3 && e0->halfedge()->twin()->face()->degree() != 3) {
