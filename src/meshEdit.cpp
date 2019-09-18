@@ -270,9 +270,12 @@ ahha,
    if (e0->isBoundary() && e0->halfedge()->face()->degree() != 3)  {return e0->halfedge()->vertex(); }
    else if (e0->isBoundary() && e0->halfedge()->face()->degree() == 3) {
 
+      //
+      //---------------------------------
+      //
       // we are on a boundary
 
-      
+
       HalfedgeIter h0 = e0->halfedge();
       HalfedgeIter h1 = h0->twin();
 
