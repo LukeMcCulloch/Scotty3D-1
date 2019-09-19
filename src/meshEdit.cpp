@@ -48,7 +48,7 @@ VertexIter HalfedgeMesh::splitEdge(EdgeIter e0) {
 ahha,
 
    -----------------------------------------------------
-   After split
+   After split (see notes/EdgeSplit.pdf for a up to date picture)
 
 
 	*/    
@@ -77,6 +77,7 @@ ahha,
       HalfedgeIter h0 = e0->halfedge();
       HalfedgeIter h1 = h0->next();
       HalfedgeIter h2 = h1->next();
+      HalfedgeIter h3 = h0->twin();
       HalfedgeIter h6 = h1->twin();
       HalfedgeIter h7 = h2->twin();
       //
@@ -104,7 +105,7 @@ ahha,
       //initialize new edge, face and halfedge
       //2 new edges 
       EdgeIter e5 = newEdge();
-      EdgeIter e6 = newEdge();
+      EdgeIter e7 = newEdge();
 
       //1 new face (we had 1 since we are on a boundary)
       FaceIter f2 = newFace();
@@ -112,37 +113,41 @@ ahha,
       // 4 new halfedges (2 for each new edge)
       HalfedgeIter h10 = newHalfedge();
       HalfedgeIter h11 = newHalfedge();
-      HalfedgeIter h12 = newHalfedge();
-      HalfedgeIter h13 = newHalfedge();
+      HalfedgeIter h14 = newHalfedge();
+      HalfedgeIter h15 = newHalfedge();
 
 
       //  Now make new connectivity
 
       //assign value to new elems
-      // v4->halfedge() = h0;
-      // e5->halfedge() = h10; // e5->halfedge = new_h[1] aka h10
-      // e6->halfedge() = h13; // e6->halfedge = new_h[4] aka h13
-      // e7->halfedge() = h14; // e7->halfedge = new_h[3] aka h14
+      v4->halfedge() = h0;
+      e5->halfedge() = h11; // e5->halfedge = new_h[1] aka h10
+      e7->halfedge() = h14; // e7->halfedge = new_h[3] aka h14
 
-      // f2->halfedge() = h2; //h11; //h2; // f2->halfedge = new_h[1] = h11
-      // f3->halfedge() = h4; //h10; //h4; // f3->halfedge = new_h[0] = h10
+      f2->halfedge() = h2; //h11; //h2; // f2->halfedge = new_h[1] = h11
 
-      // h10->setNeighbors(h4, h11, v4, e5, f3);
-      // h11->setNeighbors(h14, h10, v0, e5, f2);
-      // h12->setNeighbors(h10, h13, v3, e6, f3);
-      // h13->setNeighbors(h5, h12, v4, e6, f1);
-      // h14->setNeighbors(h2, h15, v4, e7, f2);
-      // h15->setNeighbors(h0, h14, v2, e7, f0);
+      h10->setNeighbors(h3->next(), h11, v4, e5, f2); //f3);
+      h11->setNeighbors(h14, h10, v0, e5, f2);
+      h14->setNeighbors(h2, h15, v4, e7, f2);
+      h15->setNeighbors(h0, h14, v2, e7, f0);
 
 
-      // e0->halfedge() = h0;
-      // f0->halfedge() = h1;
-      // f1->halfedge() = h5;
-      // h0->setNeighbors(h0->next(), h0->twin(), v4, h0->edge(), h0->face());
-      // h1->setNeighbors(h15, h1->twin(), h1->vertex(), h1->edge(), h1->face());
-      // h2->setNeighbors(h11, h2->twin(), h2->vertex(), h2->edge(), f2);
-      // h3->setNeighbors(h13, h3->twin(), h3->vertex(), h3->edge(), h3->face());
-      // h4->setNeighbors(h12, h4->twin(), h4->vertex(), h4->edge(), f3);
+      e0->halfedge() = h0;
+      f0->halfedge() = h1;
+      //f1->halfedge() = h5;
+      h0->setNeighbors(h0->next(), h0->twin(), v4, h0->edge(), h0->face());
+      h1->setNeighbors(h15, h1->twin(), h1->vertex(), h1->edge(), h1->face());
+      h2->setNeighbors(h11, h2->twin(), h2->vertex(), h2->edge(), f2);
+      h3->setNeighbors(h10, h3->twin(), h3->vertex(), h3->edge(), h3->face());
+      //h4->setNeighbors(h12, h4->twin(), h4->vertex(), h4->edge(), f3);
+
+      /*
+      void setNeighbors(HalfedgeIter next, 
+                        HalfedgeIter twin, 
+                        VertexIter vertex,
+                        EdgeIter edge, 
+                        FaceIter face) {
+      */
 
       return v4;
    }
@@ -284,13 +289,6 @@ ahha,
    h3->setNeighbors(h13, h3->twin(), h3->vertex(), h3->edge(), h3->face());
    h4->setNeighbors(h12, h4->twin(), h4->vertex(), h4->edge(), f3);
    
-   /*
-  void setNeighbors(HalfedgeIter next, 
-                    HalfedgeIter twin, 
-                    VertexIter vertex,
-                    EdgeIter edge, 
-                    FaceIter face) {
-   */
 
    //reassign value to old elems
    return v4;
@@ -316,7 +314,8 @@ ahha,
 // 	ON A HALFEDGE DATA STRUCTURE
 // 	CMU CS 15-462 (FALL 2015)
 //    -----------------------------------------------------
-//    Before split
+//    Before split (see notes/EdgeSplit.pdf for a better picture
+//      the one below probably has bugs)
 
 //    v3            h9                    v1  
 //                <-------
@@ -343,7 +342,8 @@ ahha,
 // ahha,
 
 //    -----------------------------------------------------
-//    After split
+//    After split(see notes/EdgeSplit.pdf for a better picture
+//      the one below probably has bugs)
 
 //    v3            h9                    v1  
 //                <-------
