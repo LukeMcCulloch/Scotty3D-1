@@ -194,8 +194,8 @@ ahha,
    h3->setNeighbors(h13, h3->twin(), h3->vertex(), h3->edge(), h3->face());
    h4->setNeighbors(h12, h4->twin(), h4->vertex(), h4->edge(), f3);
    
-   h7->setNeighbors(h7->next(), h7->twin(), h7->vertex(), h7->edge(), f2);
-   h8->setNeighbors(h8->next(), h8->twin(), h8->vertex(), h8->edge(), f3);
+   //h7->setNeighbors(h7->next(), h7->twin(), h7->vertex(), h7->edge(), h7->face());
+   //h8->setNeighbors(h8->next(), h8->twin(), h8->vertex(), h8->edge(), h8->face());
    
    /*
   void setNeighbors(HalfedgeIter next, 
