@@ -280,6 +280,7 @@ ahha,
    h15->setNeighbors(h0, h14, v2, e7, f0);
 
 
+   //reassign value to old elems
    e0->halfedge() = h0;
    f0->halfedge() = h1;
    f1->halfedge() = h5;
@@ -290,7 +291,6 @@ ahha,
    h4->setNeighbors(h12, h4->twin(), h4->vertex(), h4->edge(), f3);
    
 
-   //reassign value to old elems
    return v4;
 }
 
