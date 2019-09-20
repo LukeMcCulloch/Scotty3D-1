@@ -295,6 +295,32 @@ ahha,
 }
 
 
+// VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
+
+//    // collapse on boundary is not implemented
+// 	if (e->isBoundary()) { return e0->halfedge()->vertex(); }
+
+//    // cache local "up"
+// 	//   edges, faces and halfedges 
+// 	vector<EdgeIter> up_e;
+// 	vector<FaceIter> up_f;
+// 	vector<HalfedgeIter> up_h;
+// 	//vector<VertexIter> up_v;
+
+//    // cache local "down"
+// 	//   edges, faces and halfedges 
+// 	vector<EdgeIter> down_e;
+// 	vector<FaceIter> down_f;
+// 	vector<HalfedgeIter> down_h;
+// 	//vector<VertexIter> up_v;
+
+// 	//set the center vertex
+// 	HalfedgeIter h0 = e0->halfedge();
+// 	VertexIter v4 = h0->vertex();
+
+//    return VertexIter v4;
+// }
+
 
 VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
   // command None
