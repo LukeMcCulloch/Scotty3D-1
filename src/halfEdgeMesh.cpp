@@ -876,4 +876,40 @@ Info Halfedge::getInfo() {
   return info;
 }
 
+
+
+/**
+* print out the positions of all the 
+* vertices on a face
+*/
+/*
+void HalfedgeMesh::printVertexPositions(FaceCIter f) {
+   HalfEdgeCIter h = f->halfedge();  // get the first halfedge of the face
+   do {
+      VertexCIter v = h->vertex();   // get the vertex of the current halfedge
+      cout << v->position << endl;   // print the vertex position
+      h = h->next();                 // move to the next halfedge around the face
+   } while (h != f->halfedge());     // keep going until we're back at the beginning
+}
+/**/
+
+
+/**
+* print out the positions of all the neighbors 
+* of a given vertex we could write a routine like this:
+*/
+/*
+void HalfedgeMesh::printNeighborPositions(VertexCIter v) {
+   HalfEdgeCIter h = v->halfedge();      // get one of the outgoing halfedges of the vertex
+   do {
+      HalfEdgeCIter h_twin = h->twin();  // get the vertex of the current halfedge
+      VertexCIter vN = h_twin->vertex(); // vertex is 'source' of the half edge.
+                                         // so h->vertex() is v,
+                                         // whereas h_twin->vertex() is the neighbor vertex.
+      cout << vN->position << endl;      // print the vertex position
+      h = h_twin->next();                // move to the next outgoing halfedge of the vertex.
+   } while(h != v->halfedge());          // keep going until we're back at the beginning
+}
+/**/
+
 }  // namespace CMU462

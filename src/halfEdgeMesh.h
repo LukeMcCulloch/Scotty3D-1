@@ -522,6 +522,13 @@ class Face : public HalfedgeElement {
 
   Matrix4x4 quadric;
 
+
+   /**
+   * print out the positions of all the 
+   * vertices on a face
+   */
+   //void printVertexPositions(FaceCIter f);
+
  protected:
   HalfedgeIter _halfedge;  ///< one of the halfedges of this face
   bool _isBoundary;        ///< boundary flag
@@ -696,6 +703,15 @@ class Vertex : public HalfedgeElement {
     return d;
   }
 
+
+  /**
+   * print out the positions of all the neighbors 
+   * of a given vertex we could write a routine like this:
+  */
+  //void printNeighborPositions(VertexCIter v);
+
+
+
   Matrix4x4 quadric;
 
  protected:
@@ -703,7 +719,8 @@ class Vertex : public HalfedgeElement {
    * one of the halfedges "rooted" or "based" at this vertex
    */
   HalfedgeIter _halfedge;
-};
+}; //end vertex class definition
+
 
 class Edge : public HalfedgeElement {
  public:
@@ -1038,6 +1055,19 @@ class HalfedgeMesh {
 
   void splitPolygon(FaceIter f);
   void splitPolygons(vector<FaceIter>& fcs);
+
+
+
+   /**
+   * print out the positions of all the 
+   * vertices on a face
+   */
+   //void printVertexPositions(FaceCIter f);
+   /**
+   * print out the positions of all the neighbors 
+   * of a given vertex we could write a routine like this:
+   */
+   //void printNeighborPositions(VertexCIter v);
 
  protected:
   /*
