@@ -421,6 +421,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
 		r3->twin() = r4;
 		r4->twin() = r3;
 		r4->edge() = er1;
+		//r3->edge() = er1; // redundant
 		er1->halfedge() = r3;
 
 		h = r4->next();
