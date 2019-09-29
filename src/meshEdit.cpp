@@ -404,6 +404,11 @@ VertexIter HalfedgeMesh::collapseEdge_new(EdgeIter e0) {
 		HalfedgeIter l2 = l1->next();
 		HalfedgeIter l3 = l2->twin();
 		HalfedgeIter l4 = l1->twin();
+		//get related edge
+		EdgeIter el1 = l1->edge();
+		EdgeIter el2 = l2->edge();
+		//get related vertex
+		VertexIter v3r = l2->vertex();  //v2 in the non illustrated code
 
    return VertexIter v4;
 }
