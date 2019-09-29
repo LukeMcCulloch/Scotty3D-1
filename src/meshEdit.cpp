@@ -295,98 +295,106 @@ ahha,
 }
 
 
-// VertexIter HalfedgeMesh::collapseEdge_new(EdgeIter e0) {
-//    // working from EdgeCollapse.svg (incomplete drawing, but names match EdgeSplit.pdf)
+VertexIter HalfedgeMesh::collapseEdge_new(EdgeIter e0) {
+   // working from EdgeCollapse.svg (incomplete drawing, but names match EdgeSplit.pdf)
 
-//    // collapse on boundary is not implemented
-// 	if (e->isBoundary()) { return e0->halfedge()->vertex(); }
-
-
-// 	HalfedgeIter h0 = e->halfedge(); 
-// 	HalfedgeIter old_h = h0; // h might change after we delete halfedge from triangles
-// 	HalfedgeIter h3 = h->twin();
-
-//    FaceIter f0 = h0.face();
-//    FaceIter f1 = h3.face();
+   // collapse on boundary is not implemented
+	if (e->isBoundary()) { return e0->halfedge()->vertex(); }
 
 
-// 	//use faces to check if edge is in triangle
-// 	bool right = false;
-// 	bool left  = false;	
-// 	if (f0->degree() == 3) { right = true; }
-// 	if (f1->degree() == 3) { left  = true; }
+	HalfedgeIter h0 = e->halfedge(); 
+	HalfedgeIter old_h = h0; // h might change after we delete halfedge from triangles
+	HalfedgeIter h3 = h->twin();
 
-// 	//set the center vertex
-// 	VertexIter v0  = h0->vertex();
-// 	VertexIter v1  = h3->vertex();
-// 	v0->position   = e->centroid();
-//    // pull in the halfedges
-// 	v0->halfedge() = h3->next()->twin()->next(); // move h0 to the first existing similar place on a triangle "above"
-// 	v1->halfedge() = h0->next()->twin()->next(); // move h3 to the first existing similar place on a triangel "below"
-
-//    // // cache local "up"
-// 	// //   edges, faces and halfedges 
-// 	// vector<EdgeIter> up_e;
-// 	// vector<FaceIter> up_f;
-// 	// vector<HalfedgeIter> up_h;
-// 	// //vector<VertexIter> up_v;
-//    // while () {
-
-//    // }
-
-//    // // cache local "down"
-// 	// //   edges, faces and halfedges 
-// 	// vector<EdgeIter> down_e;
-// 	// vector<FaceIter> down_f;
-// 	// vector<HalfedgeIter> down_h;
-// 	// //vector<VertexIter> up_v;
+   FaceIter f0 = h0.face();
+   FaceIter f1 = h3.face();
 
 
-// 	if (right) {
-// 		if (h->next()->isBoundary() || h->next()->next()->isBoundary()) {
-// 			return e->halfedge()->vertex();
-// 		}
-// 		//get related halfedges
-//       HalfedgeIter r1 = h0->next();
-//       HalfedgeIter r2 = r1->next();
-// 		HalfedgeIter r3 = r2->twin();
-// 		HalfedgeIter r4 = r1->twin();
-// 		//get related edge
-// 		EdgeIter er1 = r2->edge();
-// 		EdgeIter er2 = r1->edge();
-// 		//get related vertex
-// 		VertexIter v1r = r2->vertex();
+	//use faces to check if edge is in triangle
+	bool right = false;
+	bool left  = false;	
+	if (f0->degree() == 3) { right = true; }
+	if (f1->degree() == 3) { left  = true; }
 
-// 		//reassign value
-// 		v1r->halfedge() = r3->next();
-// 		r3->twin() = r4;
-// 		r4->twin() = r3;
-// 		r4->edge() = er1;
-// 		er1->halfedge() = r3;
+	//set the center vertex
+	VertexIter v0  = h0->vertex();
+	VertexIter v1  = h3->vertex();
+	v0->position   = e->centroid();
+   // pull in the halfedges
+	v0->halfedge() = h3->next()->twin()->next(); // move h0 to the first existing similar place on a triangle "above"
+	v1->halfedge() = h0->next()->twin()->next(); // move h3 to the first existing similar place on a triangel "below"
 
-// 		h0 = r4->next();
+   // // cache local "up"
+	// //   edges, faces and halfedges 
+	// vector<EdgeIter> up_e;
+	// vector<FaceIter> up_f;
+	// vector<HalfedgeIter> up_h;
+	// //vector<VertexIter> up_v;
+   // while () {
 
-// 		deleteHalfedge(r1);
-// 		deleteHalfedge(r2);
-// 		deleteEdge(er2);
-//    }
-//    else {
-//       // get related halfedges
-//       HalfedgeIter r1 = h0->next();
-//       HalfedgeIter r2 = h0;
-//       while (r2->next() != h0 ) {
-//          r2 = r2->next(); // go around the boundary
-//       }
-//       //reassign value
-//       r2->next() = r1;
-//       r1->vertex() = v1;
-//       r1->face->halfedge() = r1; // needed?
+   // }
 
-//       h0 = r1->twin()->next();
-//    }
+   // // cache local "down"
+	// //   edges, faces and halfedges 
+	// vector<EdgeIter> down_e;
+	// vector<FaceIter> down_f;
+	// vector<HalfedgeIter> down_h;
+	// //vector<VertexIter> up_v;
 
-//    return VertexIter v4;
-// }
+
+	if (right) {
+		if (h->next()->isBoundary() || h->next()->next()->isBoundary()) {
+			return e->halfedge()->vertex();
+		}
+		//get related halfedges
+      HalfedgeIter r1 = h0->next();
+      HalfedgeIter r2 = r1->next();
+		HalfedgeIter r3 = r2->twin();
+		HalfedgeIter r4 = r1->twin();
+		//get related edge
+		EdgeIter er1 = r2->edge();
+		EdgeIter er2 = r1->edge();
+		//get related vertex
+		VertexIter v1r = r2->vertex();
+
+		//reassign value
+		v1r->halfedge() = r3->next();
+		r3->twin() = r4;
+		r4->twin() = r3;
+		r4->edge() = er1;
+		er1->halfedge() = r3;
+
+		h0 = r4->next();
+
+		deleteHalfedge(r1);
+		deleteHalfedge(r2);
+		deleteEdge(er2);
+   }
+   else {
+      // get related halfedges
+      HalfedgeIter r1 = h0->next();
+      HalfedgeIter r2 = h0;
+      while (r2->next() != h0 ) {
+         r2 = r2->next(); // go around the boundary
+      }
+      //reassign value
+      r2->next() = r1;
+      r1->vertex() = v1;
+      r1->face->halfedge() = r1; // needed?
+
+      h0 = r1->twin()->next();
+   }
+
+	//update the bottom vertex to the returned vertex
+	//HalfedgeIter temp1 = h->next()->twin()->next();
+	cout << "num of edges; " << h0->vertex()->degree() << endl;
+	HalfedgeIter temp1 = h0;
+	while (temp1 != h3) {
+      temp1->vertex() = v;
+      temp1 = temp1->twin()->next();
+
+   return VertexIter v4;
+}
 
 
 VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
@@ -466,7 +474,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
 	HalfedgeIter temp1 = h;	
 	while (temp1 != h0) {
 		temp1->vertex() = v;
-		temp1 = temp1->twin()->next();		
+		temp1 = temp1->twin()->next(); // set temp1 to halfedge just "before" h
 	}
 	cout << "collapse 1" << endl;
 	if (left) {
