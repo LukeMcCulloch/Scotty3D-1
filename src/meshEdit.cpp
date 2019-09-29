@@ -454,9 +454,10 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
 		//reassign value
 		r2->next() = r1;
 		r1->vertex() = v;
-		r1->face()->halfedge() = r1;
+		//r1->face()->halfedge() = r1; //needed?
 
-		h = r1->twin()->next();
+		//h = r1->twin()->next(); // inconsistent with earlier case, but does not hurt?
+      h = r1;
 	}
 	
 	//update the bottom vertex to the returned vertex
