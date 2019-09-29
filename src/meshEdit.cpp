@@ -321,8 +321,8 @@ VertexIter HalfedgeMesh::collapseEdge_new(EdgeIter e0) {
 	VertexIter v1  = h3->vertex();
 	v0->position   = e->centroid();
    // pull in the halfedges
-	v0->halfedge() = h3->next()->twin()->next(); // move h0 to a similar place on a triangle "above"
-	v1->halfedge() = h0->next()->twin()->next(); // move h3 to a similar place on a triangel "below"
+	v0->halfedge() = h3->next()->twin()->next(); // move h0 to the first existing similar place on a triangle "above"
+	v1->halfedge() = h0->next()->twin()->next(); // move h3 to the first existing similar place on a triangel "below"
 
    // // cache local "up"
 	// //   edges, faces and halfedges 
