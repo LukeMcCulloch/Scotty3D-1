@@ -473,7 +473,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
 	cout << "num of edges; " << h->vertex()->degree() << endl;
 	HalfedgeIter temp1 = h;	
 	while (temp1 != h0) {
-		temp1->vertex() = v;
+		temp1->vertex() = v; // this loop stays on half edges eminating from v
 		temp1 = temp1->twin()->next(); // set temp1 to halfedge just "before" h
 	}
 	cout << "collapse 1" << endl;
