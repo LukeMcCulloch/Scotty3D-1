@@ -393,6 +393,18 @@ VertexIter HalfedgeMesh::collapseEdge_new(EdgeIter e0) {
       temp1->vertex() = v;
       temp1 = temp1->twin()->next();
 
+
+	cout << "collapse 1" << endl;
+	if (left) {
+		if (h3->next()->isBoundary() || h3->next()->next()->isBoundary()) {
+			return e->halfedge()->vertex();
+		}
+		//get related halfedges
+		HalfedgeIter l1 = h3->next();
+		HalfedgeIter l2 = l1->next();
+		HalfedgeIter l3 = l2->twin();
+		HalfedgeIter l4 = l1->twin();
+
    return VertexIter v4;
 }
 
