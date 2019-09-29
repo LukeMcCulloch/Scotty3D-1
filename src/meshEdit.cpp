@@ -370,6 +370,20 @@ ahha,
 // 		deleteHalfedge(r2);
 // 		deleteEdge(er2);
 //    }
+//    else {
+//       // get related halfedges
+//       HalfedgeIter r1 = h0->next();
+//       HalfedgeIter r2 = h0;
+//       while (r2->next() != h0 ) {
+//          r2 = r2->next(); // go around the boundary
+//       }
+//       //reassign value
+//       r2->next() = r1;
+//       r1->vertex() = v1;
+//       r1->face->halfedge() = r1; // needed?
+
+//       h0 = r1->twin()->next();
+//    }
 
 //    return VertexIter v4;
 // }
