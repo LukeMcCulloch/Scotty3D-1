@@ -1164,7 +1164,16 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
 
 		e = nextEdge;
 	}
-  
+
+   
+  /*Flip any new edge that touches a new vertex and an old vertex. 
+  Note: Every original edge will now be represented by 2 edges, 
+  you should not flip these edges, because they 
+  are always already along the boundary of the 4 way divided triangles. 
+  In the diagrams below, you should only flip the blue edges 
+  that connect an old and new vertex, 
+  but you should not flip any of the black new edges.*/
+
   // -> Now flip any new edge that connects an old and new vertex.
   for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
 	  if ((e->isNew) && (e->halfedge()->vertex()->isNew ^ e->halfedge()->twin()->vertex()->isNew)) {
