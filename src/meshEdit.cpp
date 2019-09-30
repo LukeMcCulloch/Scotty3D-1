@@ -1100,6 +1100,7 @@ EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
 
 }
 
+/* http://462cmu.github.io/asst2_meshedit/ */
 void MeshResampler::upsample(HalfedgeMesh& mesh) {
    // This routine should increase the number of triangles in the mesh 
    // using Loop subdivision.
