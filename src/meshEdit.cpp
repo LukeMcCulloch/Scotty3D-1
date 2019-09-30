@@ -1100,15 +1100,17 @@ EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
 
 }
 
-void MeshResampler::upsample(HalfedgeMesh& mesh)
-// This routine should increase the number of triangles in the mesh using Loop
-// subdivision.
-{
+void MeshResampler::upsample(HalfedgeMesh& mesh) {
+   // This routine should increase the number of triangles in the mesh 
+   // using Loop subdivision.
+
   // TODO: (meshEdit)
   // Compute new positions for all the vertices in the input mesh, using
   // the Loop subdivision rule, and store them in Vertex::newPosition.
+
   // -> At this point, we also want to mark each vertex as being a vertex of the
   //    original mesh.
+  std::cout << "upsample via Loop subdivision" << std::endl;
 	for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++) {
 		v->isNew = false;
 		double n = (double)(v->degree());
@@ -1208,7 +1210,10 @@ void MeshResampler::upsample(HalfedgeMesh& mesh)
   // Finally, flip any new edge that connects an old and new vertex.
 
   // Copy the updated vertex positions to the subdivided mesh.
-  showError("upsample() not implemented.");
+  //showError("upsample() not implemented.");
+
+
+  std::cout << "upsample complete" << std::endl;
 }
 
 void MeshResampler::downsample(HalfedgeMesh& mesh) {
