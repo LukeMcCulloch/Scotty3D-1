@@ -1102,8 +1102,29 @@ EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
 
 /* http://462cmu.github.io/asst2_meshedit/ */
 void MeshResampler::upsample(HalfedgeMesh& mesh) {
-   // This routine should increase the number of triangles in the mesh 
-   // using Loop subdivision.
+  /*
+    This routine should increase the number of triangles in the mesh 
+    using Loop subdivision.
+    -----------------------------------------------------------------
+
+    Each vertex and edge of the original surface 
+    can be associated with a vertex in the new (subdivided) surface.
+
+    Therefore, our strategy for computing the subdivided vertex locations 
+    is to *first* compute the new positions
+    using the connectity of the original (coarse) mesh; 
+
+    navigating this mesh
+    will be much easier than navigating
+    the new subdivided (fine) mesh, 
+    which has more elements to traverse.  
+
+    We will then assign vertex positions
+    in the new mesh based on the values we computed for the original mesh.
+    
+    -----------------------------------------------------------------
+  */
+
 
   // TODO: (meshEdit)
   // Compute new positions for all the vertices in the input mesh, using
@@ -1190,17 +1211,6 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
 	for (int j = 0; j < V.size(); j++) {
 		V[j]->position = E[j]->newPosition;
 	}
-
-  // Each vertex and edge of the original surface can be associated with a
-  // vertex in the new (subdivided) surface.
-  // Therefore, our strategy for computing the subdivided vertex locations is to
-  // *first* compute the new positions
-  // using the connectity of the original (coarse) mesh; navigating this mesh
-  // will be much easier than navigating
-  // the new subdivided (fine) mesh, which has more elements to traverse.  We
-  // will then assign vertex positions in
-  // the new mesh based on the values we computed for the original mesh.
-
   // Compute updated positions for all the vertices in the original mesh, using
   // the Loop subdivision rule.
 
