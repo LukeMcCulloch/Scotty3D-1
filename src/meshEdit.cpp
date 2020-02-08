@@ -769,6 +769,8 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
   // rules. (These rules are outlined in the Developer Manual.)
 
 
+  //Vector3D weight = {1./8, 3./4., 1./8.};
+  Vector3D weight = {1.,1.,1.};
 
   // 1. Set the new vertex position at each face f to the 
   // average of all its original vertices 
@@ -793,6 +795,7 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
       // on a boundary... and odd (i.e. newly created) vertex gets a weight of 1/2
       // 1/2 <---- o ------> 1/2
       e->newPosition = 0.5*(end1 + end2);
+      //e->halfedge()->vertex()->position = weight[0] * end1 + weight[1]*e->newPosition + weight[2] * end2;
     }
     else {
       // so the new vertex at each edge e is:
@@ -816,28 +819,25 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
       HalfedgeIter temp1 = v->halfedge();
       // initialize r
       Vector3D r = {0.,0.,0.};
-      Vector3D weight = {1./8, 3./4., 1./8.};
 
       if (temp1->isBoundary()) {
         r = r + weight[1] * temp1->edge()->newPosition; // new edge position
-      }
-
-      temp1 = temp1->twin()->next();
-      while (temp1 != v->halfedge()) {
-        if (temp1->isBoundary()) {
-          r = r + weight[0] * temp1->edge()->newPosition; // new edge position
-          temp1 = temp1->twin()->next();
+      
+        temp1 = temp1->twin()->next();
+        while (temp1 != v->halfedge()) {
+          if (temp1->isBoundary()) {
+            r = r + weight[0] * temp1->edge()->newPosition; // new edge position
+            temp1 = temp1->twin()->next();
+          }
+          else {
+            temp1 = temp1->twin()->next();
+          }
         }
-        else {
-          temp1 = temp1->twin()->next();
-        }
-      }
-          
       //Vector3D R = r / n; // edge average
 
       //v->newPosition = (2 * R + (n - 3) * (v->position)) / n;
       v->newPosition = r;
-      
+      }
 
     }
     else {
