@@ -833,11 +833,12 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
             temp1 = temp1->twin()->next();
           }
         }
+      }
       //Vector3D R = r / n; // edge average
 
       //v->newPosition = (2 * R + (n - 3) * (v->position)) / n;
       v->newPosition = r;
-      }
+      temp1 = temp1->twin()->next();
 
     }
     else {
