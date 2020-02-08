@@ -38,3 +38,26 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 
 2. Here is the Catmull refined CrazyTorus:
 ![LinearSubdivision](pics/subdivision/CrazyTorusCatmullClark3level.png)
+
+Of course we have barely scratched the surface with subdivision.
+
+### Subdivision things to do:
+
+1. Boundary conditions
+
+2. Matrix subdivision operators
+
+3. Stamm's eigenvalue based fast evaluation
+
+4. Other fast evaluators (B-spline patch perhaps...)
+
+### Other things to do:
+
+1. Add discrete differential geometric operators
+
+2. Add automatic differentiation in some way yet to be determined.
+
+3. ?think real hard?
+
+4. variational constrained multiresolution subdivision discrete differential geometry for geometric design?
+
