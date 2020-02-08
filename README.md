@@ -20,4 +20,4 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 
 # Some implementation details I've had time for so far
 
-![LinearSubdivision](pics/subdivision/initial.png)
+![LinearSubdivision](pics/subdivision/initialBeetle.png)
