@@ -732,19 +732,19 @@ void HalfedgeMesh::subdivideQuad(bool useCatmullClark) {
  * centroids.
  */
 void HalfedgeMesh::computeLinearSubdivisionPositions() {
-  // TODO For each vertex, assign Vertex::newPosition to
+  // For each vertex, assign Vertex::newPosition to
   // its original position, Vertex::position.
   for (VertexIter v = verticesBegin(); v != verticesEnd(); v++) {
     v->newPosition = v->position;
   }
 
-  // TODO For each edge, assign the midpoint of the two original
+  // For each edge, assign the midpoint of the two original
   // positions to Edge::newPosition.
   for (EdgeIter e = edgesBegin(); e != edgesEnd(); e++) {
     e->newPosition = e->centroid();
   }
 
-  // TODO For each face, assign the centroid (i.e., arithmetic mean)
+  // For each face, assign the centroid (i.e., arithmetic mean)
   // of the original vertex positions to Face::newPosition.  Note
   // that in general, NOT all faces will be triangles!
   for (FaceIter f = facesBegin(); f != facesEnd(); f++) {
@@ -783,15 +783,27 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
  * subdivided using Catmull-Clark (or linear) subdivision.
  */
 void HalfedgeMesh::assignSubdivisionIndices() {
-  // TODO Start a counter at zero; if you like, you can use the
+  // Start a counter at zero; if you like, you can use the
   // "Index" type (defined in halfedgeMesh.h)
+  Index i = 0;
 
-  // TODO Iterate over vertices, assigning values to Vertex::index
+  // Iterate over vertices, assigning values to Vertex::index
+  for (VertexIter v = verticesBegin(); v != verticesEnd(); v++) {
+    v->index = i;
+    i++;
+  }
 
-  // TODO Iterate over edges, assigning values to Edge::index
+  // Iterate over edges, assigning values to Edge::index
+  for (EdgeIter e = edgesBegin(); e != edgesEnd(); e++) {
+    e->index = i;
+    i++;
+  }
 
-  // TODO Iterate over faces, assigning values to Face::index
-  showError("assignSubdivisionIndices() not implemented.");
+  // Iterate over faces, assigning values to Face::index
+  for (FaceIter f = facesBegin(); f != facesEnd(); f++) {
+    f->index = i;
+    i++;
+  }
 }
 
 /**
