@@ -814,17 +814,25 @@ void HalfedgeMesh::assignSubdivisionIndices() {
  * and Face::newPosition.
  */
 void HalfedgeMesh::buildSubdivisionVertexList(vector<Vector3D>& subDVertices) {
-  // TODO Resize the vertex list so that it can hold all the vertices.
+  // Resize the vertex list so that it can hold all the vertices.
 
-  // TODO Iterate over vertices, assigning Vertex::newPosition to the
+  // Iterate over vertices, assigning Vertex::newPosition to the
   // appropriate location in the new vertex list.
+  for (VertexIter v = verticesBegin(); v != verticesEnd(); v++) {
+    subDVertices.push_back(v->newPosition);
+  }
 
-  // TODO Iterate over edges, assigning Edge::newPosition to the appropriate
+  // Iterate over edges, assigning Edge::newPosition to the appropriate
   // location in the new vertex list.
+  for (EdgeIter e = edgesBegin(); e != edgesEnd(); e++) {
+    subDVertices.push_back(e->newPosition);
+  }
 
-  // TODO Iterate over faces, assigning Face::newPosition to the appropriate
+  // Iterate over faces, assigning Face::newPosition to the appropriate
   // location in the new vertex list.
-  showError("buildSubdivisionVertexList() not implemented.");
+  for (FaceIter f = facesBegin(); f != facesEnd(); f++) {
+    subDVertices.push_back(f->newPosition);
+  }
 }
 
 /**
