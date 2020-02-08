@@ -20,4 +20,10 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 
 # Some implementation details I've had time for so far
 
+1. Here is the initial Beetle mesh:
+
 ![LinearSubdivision](pics/subdivision/initialBeetle.png)
+
+2. Here it is after 1 round of linear subdivision:
+
+![LinearSubdivision](pics/subdivision/linearSubDivBeetle.png)
