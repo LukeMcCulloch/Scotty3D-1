@@ -751,8 +751,6 @@ void HalfedgeMesh::computeLinearSubdivisionPositions() {
     f->newPosition = f->centroid();
   }
 
-
-  //showError("computeLinearSubdivisionPositions() not implemented.");
 }
 
 /**
