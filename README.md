@@ -20,6 +20,8 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 
 # Some implementation details I've had time for so far
 
+## Linear Subdivision:
+
 1. Here is the initial Beetle mesh:
 
 ![LinearSubdivision](pics/subdivision/initialBeetle.png)
@@ -27,3 +29,12 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 2. Here it is after 1 round of linear subdivision:
 
 ![LinearSubdivision](pics/subdivision/linearSubDivBeetle.png)
+
+
+## Catmul Clark, naive schemeL
+
+1. Here is the initial CrazyTorus mesh:
+![LinearSubdivision](pics/subdivision/CrazyTorusInitial.png)
+
+2. Here is the Catmull refined CrazyTorus:
+![LinearSubdivision](pics/subdivision/CrazyTorusCatmullClark3level.png)
