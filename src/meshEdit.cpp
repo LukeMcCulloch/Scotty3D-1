@@ -761,6 +761,12 @@ void HalfedgeMesh::computeLinearSubdivisionPositions() {
  * Face::newPosition.  The values of the positions are based on
  * the Catmull-Clark rules for subdivision.
  */
+/*
+ * additional resources:
+ * https://mrl.nyu.edu/publications/subdiv-course2000/coursenotes00.pdf
+ * http://www.multires.caltech.edu/pubs/sig99notes.pdf
+ * http://cs248.stanford.edu/winter19content/lectures/07_geometryprocessing/07_geometryprocessing_slides.pdf
+*/
 void HalfedgeMesh::computeCatmullClarkPositions() {
   // The implementation for this routine should be
   // a lot like HalfedgeMesh::computeLinearSubdivisionPositions(),
@@ -769,8 +775,8 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
   // rules. (These rules are outlined in the Developer Manual.)
 
 
-  //Vector3D weight = {1./8, 3./4., 1./8.};
-  Vector3D weight = {1.,1.,1.};
+  Vector3D weight = {1./8, 3./4., 1./8.};
+  //Vector3D weight = {1.,1.,1.};
 
   // 1. Set the new vertex position at each face f to the 
   // average of all its original vertices 
@@ -810,8 +816,8 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
 		size_t n = v->degree();
     //get the average of all new face position
     HalfedgeIter temp1 = v->halfedge();
-    Vector3D q = temp1->face()->newPosition; // new face position
-    Vector3D r = temp1->edge()->newPosition; // new edge position
+    Vector3D q = temp1->face()->newPosition; // 1st of the new face positions to be summed
+    Vector3D r = temp1->edge()->newPosition; // 1st of the new edge positions to be summed
     
     if (v->isBoundary()){
       //cout << "got boundary" << v->position << endl;
@@ -820,25 +826,31 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
       // initialize r
       Vector3D r = {0.,0.,0.};
 
-      if (temp1->isBoundary()) {
-        r = r + weight[1] * temp1->edge()->newPosition; // new edge position
-      
-        temp1 = temp1->twin()->next();
-        while (temp1 != v->halfedge()) {
-          if (temp1->isBoundary()) {
-            r = r + weight[0] * temp1->edge()->newPosition; // new edge position
-            temp1 = temp1->twin()->next();
-          }
-          else {
-            temp1 = temp1->twin()->next();
-          }
-        }
-      }
-      //Vector3D R = r / n; // edge average
+      int bn = 0;
 
-      //v->newPosition = (2 * R + (n - 3) * (v->position)) / n;
-      v->newPosition = r;
+      // initial case:
+      if ( temp1->edge()->isBoundary() ) {
+        //do sum or salt
+        bn = bn +1;
+        r = r + temp1->edge()->newPosition; // new edge position
+      }
+      // next halfedge
       temp1 = temp1->twin()->next();
+
+      // loop the rest of the edges connected to this vertex
+      while (temp1 != v->halfedge()) {
+        if (temp1->edge()->isBoundary()) {
+          //do sum thing
+          bn = bn +1;
+          r = r + temp1->edge()->newPosition; // new edge position
+        }
+        // next halfedge
+        temp1 = temp1->twin()->next();
+      }
+      //cout << "set edge vertex: bn = " << bn << endl;
+
+      Vector3D R = r;
+      v->newPosition = ( R + 6.0*(v->position)) / 8.0;
 
     }
     else {
@@ -846,15 +858,15 @@ void HalfedgeMesh::computeCatmullClarkPositions() {
       //cout << "got interior" << v->position << endl;
       temp1 = temp1->twin()->next();
       while (temp1 != v->halfedge()) {
-        if (temp1->isBoundary()) {
-          //r = r + temp1->edge()->newPosition;
-          continue;
-        }
-        else {
-          q = q + temp1->face()->newPosition;
-          r = r + temp1->edge()->newPosition;
+        // if (temp1->isBoundary()) {
+        //   //r = r + temp1->edge()->newPosition;
+        //   continue;
+        // }
+        // else {
+          q = q + temp1->face()->newPosition; // aka fbar
+          r = r + temp1->edge()->newPosition; // aka mbar
           temp1 = temp1->twin()->next();
-        }
+        //}
       }
           
       Vector3D Q = q / n; //face average
