@@ -67,7 +67,9 @@ As expected, the Catmull-Clark method gives a higher quality mesh.
 
 ### Subdivision things to do:
 
-1. Boundary conditions
+0. Allow boundaries (done)
+
+1. Boundary conditions 
 
 2. Matrix subdivision operators
 
