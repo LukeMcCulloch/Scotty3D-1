@@ -20,6 +20,12 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 
 # Some implementation details I've had time for so far
 
+1. Linear subdivision
+2. Catmul Clark subdivision
+3. Catmul Clark with boundaries (creases work the same way)
+
+See further below for a comparison of linear and Catmull-Clark refinement of a mesh with boundary.
+
 ## Linear Subdivision:
 
 1. Here is the initial Beetle mesh:
@@ -49,7 +55,13 @@ Of course we have barely scratched the surface with subdivision.
 2. Here is the Catmull refined Beetle (2 levels of Catmull-Clark refinement:
 ![LinearSubdivision](pics/subdivision/CatmulClark2LevelBeetle.png)
 
+## Linear(left) vs Catmull Clark (right), side by side
 
+![LinearVsCatClark](pics/subdivision/LeftLinearRightCatClark.png)
+
+In the picture above, the beetle model has been subdivided 3 times.
+On the left the subdivision method is linear.  On the right, I used Catmull-Clark with boundary rules.
+As expected, the Catmull-Clark method gives a higher quality mesh.
 
 ### Subdivision things to do:
 
