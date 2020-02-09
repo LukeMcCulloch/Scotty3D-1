@@ -460,7 +460,10 @@ string Application::info() {
     case VISUALIZE_MODE:
       return "PathTracer";
       break;
+    default: std::cout << "default\n";
+      return "Unknown";
   }
+      
 }
 
 void Application::load(SceneInfo *sceneInfo) {

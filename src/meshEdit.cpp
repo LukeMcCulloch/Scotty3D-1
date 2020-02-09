@@ -375,7 +375,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
       HalfedgeIter r1 = h0->next();
       HalfedgeIter r2 = h0;
       while (r2->next() != h0 ) {
-         r2 = r2->next(); // go around the boundary
+         r2 = r2->next(); // go around the (halfedge) boundary
       }
       //reassign value
       r2->next() = r1;
@@ -390,9 +390,13 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 	HalfedgeIter temp1 = h0;
 	//HalfedgeIter temp1 = h3;
 	cout << "num of edges; " << h0->vertex()->degree() << endl;
-	while (temp1 != h3) {
+  int maxcount = 100;
+  int thiscount = 0;
+	//while (temp1 != h3 & thiscount<maxcount) {
+	while (temp1 != h3 ) {
       temp1->vertex() = v0;
       temp1 = temp1->twin()->next();
+      thiscount +=1;
    }
 
 	cout << "collapse 1" << endl;
