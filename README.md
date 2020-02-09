@@ -45,7 +45,9 @@ See further below for a comparison of linear and Catmull-Clark refinement of a m
 2. Here is the Catmull refined CrazyTorus:
 ![LinearSubdivision](pics/subdivision/CrazyTorusCatmullClark3level.png)
 
-Of course we have barely scratched the surface with subdivision.
+Of course we have barely scratched the surface with subdivision.  
+One thing we need to do is extend the basic method to handle boundaries.
+Note that this will also handle creases.
 
 ## Catmul Clark, first extension:  Boundary rules
 
