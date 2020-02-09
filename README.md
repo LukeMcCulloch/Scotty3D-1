@@ -31,7 +31,7 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 ![LinearSubdivision](pics/subdivision/linearSubDivBeetle.png)
 
 
-## Catmul Clark, naive schemeL
+## Catmul Clark, naive scheme
 
 1. Here is the initial CrazyTorus mesh:
 ![LinearSubdivision](pics/subdivision/CrazyTorusInitial.png)
@@ -40,6 +40,16 @@ available on the project wiki accessible via tab at the top of the Github.com UI
 ![LinearSubdivision](pics/subdivision/CrazyTorusCatmullClark3level.png)
 
 Of course we have barely scratched the surface with subdivision.
+
+## Catmul Clark, first extension:  Boundary rules
+
+1. Here is the initial Beetle again:
+![LinearSubdivision](pics/subdivision/initialBeetle2.png)
+
+2. Here is the Catmull refined Beetle (2 levels of Catmull-Clark refinement:
+![LinearSubdivision](pics/subdivision/CatmulClark2LevelBeetle.png)
+
+
 
 ### Subdivision things to do:
 
