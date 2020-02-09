@@ -1326,7 +1326,7 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
 	vector<VertexIter> V;
 	for (int i = 0; i < n; i++) {
 
-		// get the next edge NOW!
+		// get the next edge from an iterator
 		EdgeIter nextEdge = e;
 		nextEdge++;
 
@@ -1370,28 +1370,6 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
 	for (int j = 0; j < V.size(); j++) {
 		V[j]->position = E[j]->newPosition;
 	}
-  // Compute updated positions for all the vertices in the original mesh, using
-  // the Loop subdivision rule.
-
-  // Next, compute the updated vertex positions associated with edges.
-
-  // Next, we're going to split every edge in the mesh, in any order.  For
-  // future
-  // reference, we're also going to store some information about which
-  // subdivided
-  // edges come from splitting an edge in the original mesh, and which edges are
-  // new.
-  // In this loop, we only want to iterate over edges of the original
-  // mesh---otherwise,
-  // we'll end up splitting edges that we just split (and the loop will never
-  // end!)
-
-  // Finally, flip any new edge that connects an old and new vertex.
-
-  // Copy the updated vertex positions to the subdivided mesh.
-  //showError("upsample() not implemented.");
-
-
   std::cout << "upsample complete" << std::endl;
 }
 
