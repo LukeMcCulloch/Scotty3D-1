@@ -347,8 +347,8 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 			return e0->halfedge()->vertex();
 		}
 		//get related halfedges
-      HalfedgeIter r1 = h0->next();
-      HalfedgeIter r2 = r1->next();
+    HalfedgeIter r1 = h0->next();
+    HalfedgeIter r2 = r1->next();
 		HalfedgeIter r3 = r2->twin();
 		HalfedgeIter r4 = r1->twin();
 		//get related edge
@@ -386,9 +386,8 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
    }
 
 	//update the bottom vertex to the returned vertex
-	//HalfedgeIter temp1 = h->next()->twin()->next();
-	cout << "num of edges; " << h0->vertex()->degree() << endl;
-	HalfedgeIter temp1 = h0;
+	HalfedgeIter temp1 = h3->next()->twin()->next();
+	cout << "num of edges; " << h3->vertex()->degree() << endl;
 	while (temp1 != h3) {
       temp1->vertex() = v0;
       temp1 = temp1->twin()->next();
@@ -397,8 +396,10 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 	cout << "collapse 1" << endl;
 	if (left) {
 		if (h3->next()->isBoundary() || h3->next()->next()->isBoundary()) {
+	    cout << "collapse early return, memory leak?" << endl;
 			return e0->halfedge()->vertex();
 		}
+	  cout << "collapse 1.1 doing more" << endl;
 		//get related halfedges
 		HalfedgeIter l1 = h3->next();
 		HalfedgeIter l2 = l1->next();
@@ -421,6 +422,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 		//get related halfedges
 		HalfedgeIter l1 = h3->next();
 		HalfedgeIter l2 = h3;
+	  cout << "collapse 2, elsing" << endl;
 		while (l2->next() != h3) {
 			l2 = l2->next(); // set l2 "behind" l1
 		}
@@ -428,16 +430,144 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 		l2->next() = l1;
 		//l1->face()->halfedge() = l1;  //redundant?
    }
+
+	cout << "collapse now deleting..." << endl;
 	//deleteHalfedge(h);
-	deleteHalfedge(old_h);
-	deleteHalfedge(h3);
+	//deleteHalfedge(old_h);
+	//deleteHalfedge(h0);
+	//deleteHalfedge(h3);
 	deleteEdge(e0);
 	deleteVertex(v1);
 	if (right) { deleteFace(f0); }
 	if (left) { deleteFace(f1); }
-	cout << "collapse complete" << endl;
-   return v0;
+	cout << "single edge collapse complete" << endl;
+  return v0;
 }
+
+
+// VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
+//   // TODO: (meshEdit)
+//   // This method should collapse the given edge and return an iterator to
+//   // the new vertex created by the collapse.
+// 	if (e->isBoundary()) { return e->halfedge()->vertex(); }
+
+// 	HalfedgeIter h = e->halfedge();
+// 	HalfedgeIter old_h = h; // h might change after we delete halfedge from triagnles
+// 	HalfedgeIter h0 = h->twin();
+// 	FaceIter f0 = h->face();
+// 	FaceIter f1 = h0->face();
+// 	//check if edge is in triangle
+// 	bool right = false;
+// 	bool left = false;	
+// 	if (f0->degree() == 3) { right = true; }
+// 	if (f1->degree() == 3) { left = true; }
+
+// 	//set the center vertex
+// 	VertexIter v = h->vertex();
+// 	VertexIter v0 = h0->vertex();
+// 	v->position = e->centroid();
+// 	v->halfedge()= h0->next()->twin()->next();
+// 	v0->halfedge() = h->next()->twin()->next();
+
+// 	if (right) {
+// 		if (h->next()->isBoundary() || h->next()->next()->isBoundary()) {
+// 			return e->halfedge()->vertex();
+// 		}
+// 		//get related halfedges
+// 		HalfedgeIter r1 = h->next();
+// 		HalfedgeIter r2 = r1->next();
+// 		HalfedgeIter r3 = r2->twin();
+// 		HalfedgeIter r4 = r1->twin();
+// 		//get related edge
+// 		EdgeIter er1 = r2->edge();
+// 		EdgeIter er2 = r1->edge();
+// 		//get related vertex
+// 		VertexIter v1 = r2->vertex();
+
+// 		//reassign value
+// 		v1->halfedge() = r3->next();
+// 		r3->twin() = r4;
+// 		r4->twin() = r3;
+// 		r4->edge() = er1;
+// 		er1->halfedge() = r3;
+
+// 		h = r4->next();
+
+// 		deleteHalfedge(r1);
+// 		deleteHalfedge(r2);
+// 		deleteEdge(er2);
+// 	}
+// 	else {
+// 		//get related halfedges
+// 		HalfedgeIter r1 = h->next();
+// 		HalfedgeIter r2 = h;
+// 		while (r2->next() != h) {
+// 			r2 = r2->next();
+// 		}
+// 		//reassign value
+// 		r2->next() = r1;
+// 		r1->vertex() = v;
+// 		r1->face()->halfedge() = r1;
+
+// 		h = r1->twin()->next();
+// 	}
+	
+// 	//update the bottom vertex to the returned vertex
+// 	//HalfedgeIter temp1 = h->next()->twin()->next();
+// 	cout << "num of edges; " << h->vertex()->degree() << endl;
+// 	HalfedgeIter temp1 = h;	
+// 	while (temp1 != h0) {
+// 		temp1->vertex() = v;
+// 		temp1 = temp1->twin()->next();		
+// 	}
+// 	cout << "collapse 1" << endl;
+// 	if (left) {
+// 		if (h0->next()->isBoundary() || h0->next()->next()->isBoundary()) {
+// 			return e->halfedge()->vertex();
+// 		}
+// 		//get related halfedges
+// 		HalfedgeIter l1 = h0->next();
+// 		HalfedgeIter l2 = l1->next();
+// 		HalfedgeIter l3 = l2->twin();
+// 		HalfedgeIter l4 = l1->twin();
+// 		//get related edge
+// 		EdgeIter el1 = l1->edge();
+// 		EdgeIter el2 = l2->edge();
+// 		//get related vertex
+// 		VertexIter v2 = l2->vertex();
+
+// 		//reassign value
+// 		v2->halfedge() = l3->next();
+// 		l3->twin() = l4;
+// 		l4->twin() = l3;
+// 		l3->edge() = el1;
+// 		el1->halfedge() = l4;
+// 		//l3->vertex() = v;
+// 		deleteHalfedge(l1);
+// 		deleteHalfedge(l2);
+// 		deleteEdge(el2);
+// 	}
+// 	else {
+// 		//get related halfedges
+// 		HalfedgeIter l1 = h0->next();
+// 		HalfedgeIter l2 = h0;
+// 		while (l2->next() != h0) {
+// 			l2 = l2->next();
+// 		}
+// 		//reassign value
+// 		l2->next() = l1;
+// 		l1->face()->halfedge() = l1;
+// 	}
+// 	//deleteHalfedge(h);
+// 	deleteHalfedge(old_h);
+// 	deleteHalfedge(h0);
+// 	deleteEdge(e);
+// 	deleteVertex(v0);
+// 	if (right) { deleteFace(f0); }
+// 	if (left) { deleteFace(f1); }
+// 	cout << "collapse complete" << endl;
+// 	return v;
+// }
 
 
 VertexIter HalfedgeMesh::collapseFace(FaceIter f) {
@@ -1434,16 +1564,16 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
 			temp1 = temp1->twin()->next();
 			
 		}
-		//cout << "2" << endl;
+		cout << "2" << endl;
 		HalfedgeIter temp2 = e->halfedge()->next();
 		while (temp2 != e->halfedge()->twin()) {
 			queue.remove(temp2->edge()->record);
 			temp2 = temp2->twin()->next();
 		}
-		//cout << "3" << endl;
-		//cout << "e: " << &(e->halfedge()) << endl;
+		cout << "3" << endl;
+		cout << "e: " << &(e->halfedge()) << endl;
 		VertexIter v = mesh.collapseEdge(e);		
-		//cout << "v degree: " << v->degree() << endl;
+		cout << "v degree: " << v->degree() << endl;
 		//update quadric of related vertices, faces and edges
 		HalfedgeIter hv = v->halfedge();
 		Matrix4x4 mv;
@@ -1455,9 +1585,9 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
 			hv = hv->twin()->next();
 		}
 		v->quadric = mv;
-		//cout << "--one round--" << endl;
+		cout << "--one round--" << endl;
 	}
-	//cout << "simplification end" << endl;
+	cout << "simplification end" << endl;
   //showError("downsample() not implemented.");
 }
 
