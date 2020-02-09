@@ -1283,7 +1283,7 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
   */
 
 
-  // TODO: (meshEdit)
+  // Done: upsample using Loop Subdivision
   // Compute new positions for all the vertices in the input mesh, using
   // the Loop subdivision rule, and store them in Vertex::newPosition.
 
