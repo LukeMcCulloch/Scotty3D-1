@@ -1306,7 +1306,9 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
 	for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++) {
 		HalfedgeIter temp1 = e->halfedge();
 		HalfedgeIter temp2 = temp1->twin();
-		e->newPosition = 3.0 / 8.0*2.0*e->centroid() + 1.0 / 8.0*(temp1->next()->next()->vertex()->position + temp2->next()->next()->vertex()->position);
+    Vector3D C = temp1->next()->next()->vertex()->position;
+    Vector3D D = temp2->next()->next()->vertex()->position;
+		e->newPosition = 3.0 / 8.0 * 2.0*e->centroid() + 1.0 / 8.0*(C+D);
 
 		e->isNew = false;
 	}
