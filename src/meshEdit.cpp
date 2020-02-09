@@ -386,8 +386,10 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
    }
 
 	//update the bottom vertex to the returned vertex
-	HalfedgeIter temp1 = h3->next()->twin()->next();
-	cout << "num of edges; " << h3->vertex()->degree() << endl;
+	//HalfedgeIter temp1 = h0->next()->twin()->next();
+	HalfedgeIter temp1 = h0;
+	//HalfedgeIter temp1 = h3;
+	cout << "num of edges; " << h0->vertex()->degree() << endl;
 	while (temp1 != h3) {
       temp1->vertex() = v0;
       temp1 = temp1->twin()->next();
@@ -433,12 +435,19 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 
 	cout << "collapse now deleting..." << endl;
 	//deleteHalfedge(h);
-	//deleteHalfedge(old_h);
+  cout << "delete old_h" << endl;
+	deleteHalfedge(old_h);
+  //cout << "delete h0" << endl;
 	//deleteHalfedge(h0);
-	//deleteHalfedge(h3);
+  cout << "delete h3" << endl;
+	deleteHalfedge(h3);
+  cout << "delete e0" << endl;
 	deleteEdge(e0);
-	deleteVertex(v1);
+  //cout << "delete v1" << endl;
+	//deleteVertex(v1);
+  cout << "delete f0" << endl;
 	if (right) { deleteFace(f0); }
+  cout << "delete f1" << endl;
 	if (left) { deleteFace(f1); }
 	cout << "single edge collapse complete" << endl;
   return v0;
