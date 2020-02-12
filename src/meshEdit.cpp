@@ -690,7 +690,7 @@ ahha,
     } while (currH != h_twin);
     h1_prev->next() = h->next();
     h2_prev->next() = h_twin->next();
-
+    cout << "past do while edge collapse" << endl;
     // vertex
     newVtx->halfedge() = h1_prev->twin();
     newVtx->position = centroid;
@@ -737,6 +737,9 @@ ahha,
      printf("End of Edge Collapse: Cleanup\n");
 
     // delete
+    //if (delVtx != newVtx) {
+    //  deleteVertex(delVtx);
+    //}
     deleteVertex(delVtx);
     deleteEdge(e);
     deleteHalfedge(h);
@@ -1656,19 +1659,22 @@ void HalfedgeMesh::splitPolygon(FaceIter f) {
 
 
 EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
-  // TODO: (meshEdit)
+
   // Compute the combined quadric from the edge endpoints.
 	//EdgeRecord R;
 	_edge->record.edge = _edge;
-  // Compute the combined quadric matrix from the edge endpoints.
-	Matrix4x4 quad = _edge->halfedge()->vertex()->quadric + _edge->halfedge()->twin()->vertex()->quadric;
+
+  // 1. Compute the combined quadric matrix from the edge endpoints.
+	Matrix4x4 quad =  _edge->halfedge()->vertex()->quadric + \
+                    _edge->halfedge()->twin()->vertex()->quadric;
+
   // -> Build the 3x3 linear system whose solution minimizes the quadric error
   //    associated with these two endpoints.
   // -> Use this system to solve for the optimal position, and store it in
   //    EdgeRecord::optimalPoint.
   // -> Also store the cost associated with collapsing this edg in
   //    EdgeRecord::Cost.
-  Matrix3x3 A;
+  Matrix3x3 A;  // computed by accumulating quadrics and then extacting the upper-left 3x3 block
 	A[0][0] = quad[0][0];
 	A[0][1] = quad[0][1];
 	A[0][2] = quad[0][2];
@@ -1678,13 +1684,13 @@ EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
 	A[2][0] = quad[2][0];
 	A[2][1] = quad[2][1];
 	A[2][2] = quad[2][2];
-	Vector3D b;
+	Vector3D b; // computed by extracting minus the upper-right 3x1 column from the same matrix
 	b[0] = -quad[0][3];
 	b[1] = -quad[1][3];
 	b[2] = -quad[2][3];
   // -> Use this system to solve for the optimal position, and store it in
   //    EdgeRecord::optimalPoint.
-	Vector3D x = A.inv()*b;
+	Vector3D x = A.inv()*b; // solve Ax = b for x, by hitting both sides with the inverse of A
 	_edge->record.optimalPoint = x;
   // -> Also store the cost associated with collapsing this edg in
   //    EdgeRecord::Cost.
@@ -1817,10 +1823,10 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
   // in Face::quadric
 	for (FaceIter f = mesh.facesBegin(); f != mesh.facesEnd(); f++) {
 		Vector3D N = f->normal();
-		Vector3D p = f->centroid();
+		Vector3D p = f->centroid(); //just using centroid for now
 		double dist = -dot(N, p);
 		Vector4D v = (N[0], N[1], N[2], dist);
-		f->quadric = outer(v, v);
+		f->quadric = outer(v, v); //vvt matrix (aka "K")
 	}
 
   // -> Compute an initial quadric for each vertex as the sum of the quadrics
@@ -1850,63 +1856,82 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
   //    a quadric to the collapsed vertex, and to pop the collapsed edge off the
   //    top of the queue.
   //Size budget = 3 * mesh.nEdges() / 4;
-  Size budget = mesh.nEdges() / 2;
-  //Size budget = mesh.nEdges() - 20;
+  //Size budget = mesh.nEdges() / 2;
+  Size budget = mesh.nEdges() - 100;
 	//cout << "current edge number" << mesh.nEdges() << endl;
 	//cout << "should have: " << mesh.nEdges() - budget << endl;
 	int i = 0;
 	while (mesh.nEdges() > budget) {
-		//cout << "round " << i << endl;
+		cout << "round " << i << endl;
 		i++;
 
+		cout << "2. remove cheapest edge" << endl;
 		EdgeRecord best = queue.top();
 		EdgeIter e = best.edge;
 		queue.pop();
+
+
 		
-		VertexIter v0 = e->halfedge()->vertex();
+		//VertexIter v0 = e->halfedge()->vertex();
 		//VertexIter v1 = e->halfedge()->twin()->vertex();
-		cout << "1" << endl;
+		cout << "4. remove related edge, end pt 1" << endl;
 		//remove all related edges
 		HalfedgeIter temp1 = e->halfedge()->twin()->next();
 		while (temp1 != e->halfedge()) {
 			queue.remove(temp1->edge()->record);
 			temp1 = temp1->twin()->next();
-			
 		}
-		cout << "2" << endl;
+
+		cout << "4. remove related edges, end pt 2" << endl;
 		HalfedgeIter temp2 = e->halfedge()->next();
 		while (temp2 != e->halfedge()->twin()) {
 			queue.remove(temp2->edge()->record);
 			temp2 = temp2->twin()->next();
 		}
-		cout << "3" << endl;
+
+
+		cout << "5. collapse edge" << endl;
 		cout << "e: " << &(e->halfedge()) << endl;
 		VertexIter v = mesh.collapseEdge(e);		
-		cout << "v : " << v->position << endl;
-		//cout << "v degree: " << v->degree() << endl;
+		//cout << "v : " << v->position << endl;
+		cout << "v degree: " << v->degree() << endl;
+
+
+
 		//update quadric of related vertices, faces and edges
+		cout << "6. update quadric" << endl;
 		HalfedgeIter hv = v->halfedge();
 		Matrix4x4 mv;
 		mv.zero();
 		cout << "perhaps..." << endl;
 
-    // int maxit = 100;// v->degree()+1;
-    // int curit = 0;
-		//while (hv->twin()->next() != v->halfedge() & curit<maxit) {
-		while (hv->twin()->next() != v->halfedge() ) {
+
+
+    int maxit = v->degree()+1; //100;// 
+    int curit = 0;
+    cout << "Insert any edge touching the new vertex into the queue" << endl;
+		while (hv->twin()->next() != v->halfedge() & curit<maxit) {
+		//while (hv->twin()->next() != v->halfedge() ) {
+
       cout << "add quadric" << endl;
 			mv += hv->face()->quadric;
-      cout << "set edge record" << endl;
+
+      cout << "7. set edge record" << endl;
 			hv->edge()->record = EdgeRecord(hv->edge());
-      cout << "insert to the queue" << endl;
+
+      cout << "7. insert to the queue" << endl;
 			queue.insert(hv->edge()->record);
       cout << "set hv to next h.e. around vertex" << endl;
 			hv = hv->twin()->next();
-      //curit += 1;
+      curit += 1;
 		}
 		cout << "perhaps we locked up in the while loop above?" << endl;
 		v->quadric = mv;
 		cout << "--one round--" << endl;
+
+    if (curit > maxit) {
+      return;
+    }
 	}
 	cout << "simplification end" << endl;
   //showError("downsample() not implemented.");

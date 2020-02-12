@@ -246,14 +246,26 @@ inline Vertex const* elementAddress(VertexCIter v) { return &(*v); }
 inline Edge const* elementAddress(EdgeCIter e) { return &(*e); }
 inline Face const* elementAddress(FaceCIter f) { return &(*f); }
 
+// An edge record keeps track of all the information about edges
+// that we need while applying our mesh simplification algorithm.
 class EdgeRecord {
  public:
-  EdgeRecord() {}
+  EdgeRecord( void ) {}
   EdgeRecord(EdgeIter& _edge);
+    // The second constructor takes an edge, and computes all
+    // the essential data.  In particular, it computes the sum
+    // of the quadrics at the two endpoints, and solves for the
+    // optimal midpoint position as measured by this quadric.
+    // It also stores the value of this quadric as the "score"
+    // used by the priority queue.
 
   EdgeIter edge;
-  Vector3D optimalPoint;
-  double score;
+  Vector3D optimalPoint;  // the optimal point, if we were
+                          // to collapse this edge next
+  double score; // the cost associated with collapsing this edge,
+                // which is very (very!) roughly something like
+                // the distance we'll deviate from the original
+                // surface if this edge is collapsed
 };
 
 inline bool operator<(const EdgeRecord& r1, const EdgeRecord& r2) {
