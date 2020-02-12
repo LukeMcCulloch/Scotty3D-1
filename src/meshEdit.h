@@ -14,6 +14,7 @@ class MeshResampler {
 
   void upsample(HalfedgeMesh& mesh);
   void downsample(HalfedgeMesh& mesh);
+  void downsample2(HalfedgeMesh& mesh);
   void resample(HalfedgeMesh& mesh);
 };
 

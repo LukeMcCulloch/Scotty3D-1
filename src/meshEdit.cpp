@@ -1816,7 +1816,7 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
   std::cout << "upsample complete" << std::endl;
 }
 
-void MeshResampler::downsample(HalfedgeMesh& mesh) {
+void MeshResampler::downsample2(HalfedgeMesh& mesh) {
   // TODO: (meshEdit)
   // Compute initial quadrics for each face by simply writing the plane equation
   // for the face in homogeneous coordinates. These quadrics should be stored
@@ -1834,8 +1834,10 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
   for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++) {
 		HalfedgeIter h = v->halfedge();
 		Matrix4x4 quad = h->face()->quadric;
-		while (h->next() != v->halfedge()) {
-			h = h->next();
+		//while (h->next() != v->halfedge()) { // condition for face loop
+		while (h != v->halfedge()) {
+			//h = h->next(); // error - this loops he around the face.  
+    	h = h->twin()->next(); //fix - loop he around the vertex
 			quad += h->face()->quadric;
 		}
 	}
@@ -1857,7 +1859,7 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
   //    top of the queue.
   //Size budget = 3 * mesh.nEdges() / 4;
   //Size budget = mesh.nEdges() / 2;
-  Size budget = mesh.nEdges() - 100;
+  Size budget = mesh.nEdges() - 10;
 	//cout << "current edge number" << mesh.nEdges() << endl;
 	//cout << "should have: " << mesh.nEdges() - budget << endl;
 	int i = 0;
@@ -1871,19 +1873,26 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
 		queue.pop();
 
 
+    printf("3. Compute the new quadric\n");
+    //compute the new quadric
+    Matrix4x4 newK = e->halfedge()->vertex()->quadric + \
+                      e->halfedge()->twin()->vertex()->quadric;
+			
 		
 		//VertexIter v0 = e->halfedge()->vertex();
 		//VertexIter v1 = e->halfedge()->twin()->vertex();
 		cout << "4. remove related edge, end pt 1" << endl;
 		//remove all related edges
-		HalfedgeIter temp1 = e->halfedge()->twin()->next();
+		//HalfedgeIter temp1 = e->halfedge()->twin()->next();
+		HalfedgeIter temp1 = e->halfedge();
 		while (temp1 != e->halfedge()) {
 			queue.remove(temp1->edge()->record);
 			temp1 = temp1->twin()->next();
 		}
 
 		cout << "4. remove related edges, end pt 2" << endl;
-		HalfedgeIter temp2 = e->halfedge()->next();
+		//HalfedgeIter temp2 = e->halfedge()->next();
+		HalfedgeIter temp2 = e->halfedge()->twin();
 		while (temp2 != e->halfedge()->twin()) {
 			queue.remove(temp2->edge()->record);
 			temp2 = temp2->twin()->next();
@@ -1903,6 +1912,7 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
 		HalfedgeIter hv = v->halfedge();
 		Matrix4x4 mv;
 		mv.zero();
+    mv = newK;
 		cout << "perhaps..." << endl;
 
 
@@ -1910,11 +1920,12 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
     int maxit = v->degree()+1; //100;// 
     int curit = 0;
     cout << "Insert any edge touching the new vertex into the queue" << endl;
-		while (hv->twin()->next() != v->halfedge() & curit<maxit) {
+		//while (hv->twin()->next() != v->halfedge() & curit<maxit) {
 		//while (hv->twin()->next() != v->halfedge() ) {
+		while (hv != v->halfedge() ) {
 
-      cout << "add quadric" << endl;
-			mv += hv->face()->quadric;
+      //cout << "add quadric" << endl;
+			//mv += hv->face()->quadric;
 
       cout << "7. set edge record" << endl;
 			hv->edge()->record = EdgeRecord(hv->edge());
@@ -1923,8 +1934,9 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
 			queue.insert(hv->edge()->record);
       cout << "set hv to next h.e. around vertex" << endl;
 			hv = hv->twin()->next();
-      curit += 1;
+      //curit += 1;
 		}
+
 		cout << "perhaps we locked up in the while loop above?" << endl;
 		v->quadric = mv;
 		cout << "--one round--" << endl;
@@ -1937,145 +1949,163 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
   //showError("downsample() not implemented.");
 }
 
-// void MeshResampler::downsample(HalfedgeMesh& mesh)
-//   {
+void MeshResampler::downsample(HalfedgeMesh& mesh)
+  {
 
-//     // TODO: (meshEdit)
-//     // Compute initial quadrics for each face by simply writing the plane equation
-//     // for the face in homogeneous coordinates. These quadrics should be stored
-//     // in Face::quadric
-//     // -> Compute an initial quadric for each vertex as the sum of the quadrics
-//     //    associated with the incident faces, storing it in Vertex::quadric
-//     // -> Build a priority queue of edges according to their quadric error cost,
-//     //    i.e., by building an EdgeRecord for each edge and sticking it in the
-//     //    queue.
-//     // -> Until we reach the target edge budget, collapse the best edge. Remember
-//     //    to remove from the queue any edge that touches the collapsing edge
-//     //    BEFORE it gets collapsed, and add back into the queue any edge touching
-//     //    the collapsed vertex AFTER it's been collapsed. Also remember to assign
-//     //    a quadric to the collapsed vertex, and to pop the collapsed edge off the
-//     //    top of the queue.
+    // TODO: (meshEdit)
+    // Compute initial quadrics for each face by simply writing the plane equation
+    // for the face in homogeneous coordinates. These quadrics should be stored
+    // in Face::quadric
+    // -> Compute an initial quadric for each vertex as the sum of the quadrics
+    //    associated with the incident faces, storing it in Vertex::quadric
+    // -> Build a priority queue of edges according to their quadric error cost,
+    //    i.e., by building an EdgeRecord for each edge and sticking it in the
+    //    queue.
+    // -> Until we reach the target edge budget, collapse the best edge. Remember
+    //    to remove from the queue any edge that touches the collapsing edge
+    //    BEFORE it gets collapsed, and add back into the queue any edge touching
+    //    the collapsed vertex AFTER it's been collapsed. Also remember to assign
+    //    a quadric to the collapsed vertex, and to pop the collapsed edge off the
+    //    top of the queue.
     
-//     long int current_num_polygons = 0;
+    long int current_num_polygons = 0;
         
-//     for ( FaceIter f = mesh.facesBegin(); f != mesh.facesEnd(); f++ )
-//     {
-//     	f->quadric.zero(0.0);
-//     	double d = dot(f->normal(), f->halfedge()->vertex()->position);
-//     	Vector4D v(f->normal().x, f->normal().y, f->normal().z, d);
-//     	f->quadric = outer(v,v);
-//     	current_num_polygons++;
-//      	cout<<f->quadric<<endl;
-//     }
+    // Compute initial quadrics for each face by simply writing the plane equation
+    // for the face in homogeneous coordinates. These quadrics should be stored
+    // in Face::quadric
+    for ( FaceIter f = mesh.facesBegin(); f != mesh.facesEnd(); f++ )
+    {
+    	f->quadric.zero(0.0);
+    	double d = dot(f->normal(), f->halfedge()->vertex()->position);
+    	Vector4D v(f->normal().x, f->normal().y, f->normal().z, d);
+    	f->quadric = outer(v,v);
+    	current_num_polygons++;
+     	cout<<f->quadric<<endl;
+    }
 
-//     for( VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++ )
-//     {
-//     	HalfedgeIter h = v->halfedge();
-//     	v->quadric.zero(0.0);
+    // -> Compute an initial quadric for each vertex as the sum of the quadrics
+    //    associated with the incident faces, storing it in Vertex::quadric
+    for( VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); v++ )
+    {
+    	HalfedgeIter h = v->halfedge();
+    	v->quadric.zero(0.0);
     	
-//     	do{
-//     		v->quadric = v->quadric + h->face()->quadric;
-//     		h = h->twin()->next();
+    	do{
+    		v->quadric = v->quadric + h->face()->quadric;
+    		h = h->twin()->next();
     	
-//     	}while(h != v->halfedge());
+    	}while(h != v->halfedge());
     	
-//      	cout<<v->quadric<<endl;
-//     }
+     	cout<<v->quadric<<endl;
+    }
+
+
         
-//     MutablePriorityQueue<EdgeRecord> queue;
+    // -> Build a priority queue of edges according to their quadric error cost,
+    //    i.e., by building an EdgeRecord for each edge and sticking it in the
+    //    queue.
+    MutablePriorityQueue<EdgeRecord> queue;
     
-//     for( EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++ )
-//     {
-//     	EdgeRecord eRecord(e);
-//     	e->record = eRecord;
-//     	queue.insert( eRecord );
-//     }
+    for( EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); e++ )
+    {
+    	EdgeRecord eRecord(e);
+    	e->record = eRecord;
+    	queue.insert( eRecord );
+    }
     
-//     long int target_num_polygons = current_num_polygons / 2;
+
+    // Target buget
+    long int target_num_polygons = current_num_polygons / 2;
 
 
-//  	cout<<"current_edges: "<<current_num_polygons<<" "<<"target_edges: "<<target_num_polygons<<endl;
+ 	cout<<"current_edges: "<<current_num_polygons<<" "<<"target_edges: "<<target_num_polygons<<endl;
 
-//     while(target_num_polygons > 0)
-//     {
-//      	printf("Get the best edge\n");
-//     	//get the best edge record
-//     	EdgeRecord bestEdge = queue.top();
+    // -> Until we reach the target edge budget, collapse the best edge. Remember
+    //    to remove from the queue any edge that touches the collapsing edge
+    //    BEFORE it gets collapsed, and add back into the queue any edge touching
+    //    the collapsed vertex AFTER it's been collapsed. Also remember to assign
+    //    a quadric to the collapsed vertex, and to pop the collapsed edge off the
+    //    top of the queue.
+    while(target_num_polygons > 0)
+    {
+     	printf("1. Get the best edge\n");
+    	//get the best edge record
+    	EdgeRecord bestEdge = queue.top();
     	
-//      	printf("Remove that edge\n");
-//     	//remove this edge from the queue
-//     	queue.pop();
+     	printf("2. Remove that edge\n");
+    	//remove this edge from the queue
+    	queue.pop();
 
-//  			printf("Compute the new quadric\n");
-// 			//compute the new quadric
-// 			Matrix4x4 newK = bestEdge.edge->halfedge()->vertex()->quadric + bestEdge.edge->halfedge()->twin()->vertex()->quadric;
+ 			printf("3. Compute the new quadric\n");
+			//compute the new quadric
+			Matrix4x4 newK = bestEdge.edge->halfedge()->vertex()->quadric + bestEdge.edge->halfedge()->twin()->vertex()->quadric;
 			
-//  			printf("Remove the touching edges\n");
-// 			//remove all the edges at the endpoints from the queue
-// 			HalfedgeIter h1 = bestEdge.edge->halfedge()->next();
-// 			HalfedgeIter h2 = bestEdge.edge->halfedge()->twin()->next();
+ 			printf("Remove the touching edges\n");
+			//remove all the edges at the endpoints from the queue
+			HalfedgeIter h1 = bestEdge.edge->halfedge()->next();
+			HalfedgeIter h2 = bestEdge.edge->halfedge()->twin()->next();
 			
 
-//       int maxit = 1000;
-//       int curit = 0;
-//  			printf("Loop h1\n");
-// 			do
-// 			{
-// 				queue.remove(h1->edge()->record);
-// 				h1 = h1->twin()->next();
-//         curit +=1;
+      int maxit = 1000;
+      int curit = 0;
+ 			printf("Loop h1\n");
+			do
+			{
+				queue.remove(h1->edge()->record);
+				h1 = h1->twin()->next();
+        curit +=1;
 
-// 			}while(h1 != bestEdge.edge->halfedge()->twin()  & curit<maxit);
+			}while(h1 != bestEdge.edge->halfedge()->twin()  & curit<maxit);
 		
-//       maxit = 1000;
-//       curit = 0;
-//  			printf("Loop h2\n");
-// 			do
-// 			{
-// 				queue.remove(h2->edge()->record);
-// 				h2 = h2->twin()->next();
-//         curit +=1;
+      maxit = 1000;
+      curit = 0;
+ 			printf("Loop h2\n");
+			do
+			{
+				queue.remove(h2->edge()->record);
+				h2 = h2->twin()->next();
+        curit +=1;
 
-// 			}while(h2 != bestEdge.edge->halfedge()  & curit<maxit);
+			}while(h2 != bestEdge.edge->halfedge()  & curit<maxit);
 
-//       if (curit >= maxit) {
-//         cout << "Broken DownSampling, hole likely" << endl;
-//         return;
-//       }
+      if (curit >= maxit) {
+        cout << "Broken DownSampling, hole likely" << endl;
+        return;
+      }
 			
-//  			printf("collapse the new vertex\n");
-// 			//collapse the edge
-// 			VertexIter collapsedVertex = mesh.collapseEdge(bestEdge.edge);
+ 			printf("collapse the new vertex\n");
+			//collapse the edge
+			VertexIter collapsedVertex = mesh.collapseEdge(bestEdge.edge);
 			
-//  			printf("Assign the new quadric to the new vertex\n");
-// 			//assign the new quadric to the collapsed vertex
-// 			collapsedVertex->quadric = newK;
-// 	// 		collapsedVertex->position = bestEdge.optimalPoint;
+ 			printf("Assign the new quadric to the new vertex\n");
+			//assign the new quadric to the collapsed vertex
+			collapsedVertex->quadric = newK;
+	// 		collapsedVertex->position = bestEdge.optimalPoint;
 			
-//  			printf("Add all the edges to the queue that touch the new vertex\n");
-// 			//reassign all the edges touching the new vertex and store them again in the queue
-// 			HalfedgeIter h = collapsedVertex->halfedge();
+ 			printf("Add all the edges to the queue that touch the new vertex\n");
+			//reassign all the edges touching the new vertex and store them again in the queue
+			HalfedgeIter h = collapsedVertex->halfedge();
 			
-//  			printf("Getting the halfedge of the collapsed vertex\n");
-//       maxit = 1000;
-//       curit = 0;
-// 			do{
+ 			printf("Getting the halfedge of the collapsed vertex\n");
+      maxit = 1000;
+      curit = 0;
+			do{
 			
-// 				EdgeRecord eRecord(h->edge());
-// 	    	h->edge()->record = eRecord;
-// 	    	queue.insert( eRecord );
-// 	    	h = h->twin()->next();
-//         curit +=1;
+				EdgeRecord eRecord(h->edge());
+	    	h->edge()->record = eRecord;
+	    	queue.insert( eRecord );
+	    	h = h->twin()->next();
+        curit +=1;
 				
-// 			}while(h != collapsedVertex->halfedge() & curit<maxit);
-//  			printf("Got EdgeRecord\n");
+			}while(h != collapsedVertex->halfedge() & curit<maxit);
+ 			printf("Got EdgeRecord\n");
 
-//     	target_num_polygons--;
-//      	cout<<target_num_polygons<<endl;
-//     }
+    	target_num_polygons--;
+     	cout<<target_num_polygons<<endl;
+    }
     
-//   cout << "Finished DownSampling" << endl;
-// }
+  cout << "Finished DownSampling" << endl;
+}
 
 void MeshResampler::resample(HalfedgeMesh& mesh) {
   // TODO: (meshEdit)
