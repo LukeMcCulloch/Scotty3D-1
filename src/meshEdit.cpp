@@ -317,9 +317,9 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 	if (f1->degree() == 3) { left  = true; }
 
 	//set the center vertex
-	VertexIter v0  = h0->vertex(); //asserts: h0 vertex == e0 vertex
+	VertexIter v0  = h0->vertex();
 	VertexIter v1  = h3->vertex();
-	v0->position   = e0->centroid(); // because v0 gets moved here.
+	v0->position   = e0->centroid();
    // pull in the halfedges
 	v0->halfedge() = h3->next()->twin()->next(); // move h0 to the first existing similar place on a triangle "above"
 	v1->halfedge() = h0->next()->twin()->next(); // move h3 to the first existing similar place on a triangel "below"
