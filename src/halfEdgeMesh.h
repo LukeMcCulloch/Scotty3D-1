@@ -971,6 +971,10 @@ class HalfedgeMesh {
    */
   VertexIter collapseEdge(EdgeIter e);
 
+  //VertexIter collapseEdge1(EdgeIter e);
+  VertexIter collapseEdge2(EdgeIter e);
+  VertexIter collapseEdge3(EdgeIter e);
+
   /**
    * Collapse a face, returning a pointer to the collapsed vertex
    */
