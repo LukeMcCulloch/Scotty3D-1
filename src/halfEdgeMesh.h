@@ -970,10 +970,12 @@ class HalfedgeMesh {
    * Collapse an edge, returning a pointer to the collapsed vertex
    */
   VertexIter collapseEdge(EdgeIter e);
-
-  //VertexIter collapseEdge1(EdgeIter e);
+  VertexIter collapseEdge1(EdgeIter e);
   VertexIter collapseEdge2(EdgeIter e);
   VertexIter collapseEdge3(EdgeIter e);
+  // get One Ring
+
+  std::set<int> GetVertexOneRing(VertexCIter Vertices);
 
   /**
    * Collapse a face, returning a pointer to the collapsed vertex

@@ -295,7 +295,356 @@ ahha,
 }
 
 
-VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
+
+std::set<int> HalfedgeMesh::GetVertexOneRing(VertexCIter v) {
+  // Iterate over vertices in the 1-ring of v, 
+  // inserting vertex->index
+  // to the vertex ring set, OneRing
+  assignSubdivisionIndices();
+  std::set<int> OneRing;
+
+  HalfedgeCIter h = v->halfedge();     // get one of the outgoing halfedges of the vertex
+  do {
+      HalfedgeCIter h_twin = h->twin();// get the vertex of the current halfedge
+      VertexCIter v = h_twin->vertex();// vertex is 'source' of the half edge.
+                                       // so h->vertex() is v,
+                                       // whereas h_twin->vertex() is the neighbor vertex.
+      cout << " index= " << v->index << " pos = " << v->position << endl;      // print the vertex position
+      OneRing.insert(v->index);               // insert the vertex to the one ring set.
+
+      h = h_twin->next();              // move to the next outgoing halfedge of the vertex.
+  } while(h != v->halfedge());         // keep going until we're back at the beginning
+    
+
+   return OneRing;
+}
+
+VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
+
+   // TODO: (meshEdit)
+   // This method should collapse the given edge and return an iterator to
+   // the new vertex created by the collapse.
+
+   auto vt1 = e->halfedge()->vertex();
+   auto vt2 = e->halfedge()->twin()->vertex();
+
+   // get intersection of the one ring of vt1 and vt2
+   int num_one_ring_shared_adjacent_verts = 0;
+	std::set<int> ring_vt1 = HalfedgeMesh::GetVertexOneRing(vt1);
+	std::set<int> ring_vt2 = HalfedgeMesh::GetVertexOneRing(vt2);
+
+   //int len1 = ring_vt1.size();
+   //int len2 = ring_vt2.size();
+   //std::sort (ring_vt1.begin(), ring_vt1.end() ); // already sorted 
+
+   set<int> intersect;
+   set_intersection(ring_vt1.begin(),ring_vt1.end(),
+                     ring_vt2.begin(),ring_vt2.end(),
+                     std::inserter(intersect,intersect.begin()));
+   
+   num_one_ring_shared_adjacent_verts = intersect.size();
+   cout << "One Ring Intersection = " << num_one_ring_shared_adjacent_verts << endl;
+   for (auto item = intersect.begin(); item != intersect.end(); item++ ) {
+      cout << *item << endl;
+   }
+
+   if (num_one_ring_shared_adjacent_verts != 2) {
+      cout << "Non-manifold Edge Collapse Requested" << endl;
+      return e->halfedge()->vertex(); 
+   }
+   
+
+   auto h = e->halfedge();
+   auto h_twin = h->twin();
+   auto newVtx = h->vertex();
+   auto delVtx = h_twin->vertex();
+   
+   auto h1 = e->halfedge()->next();
+   auto h2 = e->halfedge()->twin()->next();
+   auto h1_twin = h1->twin();
+   auto h2_twin = h2->twin();
+   auto h1_prev = h1;
+   do {
+   h1_prev = h1_prev->next();
+   } while (h1_prev->next() != h);
+   auto h2_prev = h2;
+   do {
+   h2_prev = h2_prev->next();
+   } while (h2_prev->next() != h_twin);
+
+   // Triangular cases
+   if (h1->next() == h1_prev) {
+      // printf("First!\n");
+      auto e1 = h1->edge();
+      auto f1 = h1->face();
+      auto v1 = h1->vertex();
+      auto v2 = h1_twin->vertex();
+      auto f_nei = h1_twin->face();
+      auto h1_nei_next = h1_twin->next();
+      auto h1_nei_prev = h1_nei_next;
+      do {
+         h1_nei_prev = h1_nei_prev->next();
+      } while (h1_nei_prev->next() != h1_twin);
+
+      // half edges
+      h->next() = h1_nei_next;
+      h1_nei_prev->next() = h1_prev;
+
+      // vertices
+      v1->halfedge() = h_twin;
+      v2->halfedge() = h1_prev;
+
+      // face
+      f_nei->halfedge() = h1_nei_next;
+      h->face() = f_nei;
+      h1_prev->face() = f_nei;
+
+      // delete
+      deleteEdge(e1);
+      deleteFace(f1);
+      deleteHalfedge(h1_twin);
+      deleteHalfedge(h1);
+   }
+
+   if (h2->next() == h2_prev) {
+      // printf("Second\n");
+      auto e2 = h2->edge();
+      auto f2 = h2->face();
+      auto v1 = h2->vertex();
+      auto v2 = h2_twin->vertex();
+      auto f_nei = h2_twin->face();
+      auto h2_nei_next = h2_twin->next();
+      auto h2_nei_prev = h2_nei_next;
+      do {
+         h2_nei_prev = h2_nei_prev->next();
+      } while (h2_nei_prev->next() != h2_twin);
+
+      // half edges
+      h_twin->next() = h2_nei_next;
+      h2_nei_prev->next() = h2_prev;
+
+      // vertices
+      v1->halfedge() = h;
+      v2->halfedge() = h2_prev;
+
+      // face
+      f_nei->halfedge() = h2_nei_next;
+      h_twin->face() = f_nei;
+      h2_prev->face() = f_nei;
+
+      // delete
+      deleteEdge(e2);
+      deleteFace(f2);
+      deleteHalfedge(h2_twin);
+      deleteHalfedge(h2);
+   }
+
+   printf("Get Centroid\n");
+   Vector3D centroid = e->centroid();
+   auto f1 = h->face();
+   auto f2 = h_twin->face();
+
+   // half edges
+   auto currH = h->next();
+   int n = 0;
+   do {
+    	currH->vertex() = newVtx;
+    	currH = currH->twin()->next();
+     	printf("No. %d\n",++n);
+   } while (currH != h_twin);
+   h1_prev->next() = h->next();
+   h2_prev->next() = h_twin->next();
+   cout << "past do while edge collapse" << endl;
+   // vertex
+   newVtx->halfedge() = h1_prev->twin();
+   newVtx->position = centroid;
+
+   // face
+   f1->halfedge() = h1_prev;
+   f2->halfedge() = h2_prev;
+		
+	// printf("Here!\n");
+    
+   // //   // delete
+   // //   deleteVertex(delVtx);
+   // //   deleteEdge(e);
+   // //   deleteHalfedge(h);
+   // //   deleteHalfedge(h_twin);
+      
+      // // printf("Here!\n");	
+      
+   //   if (h1->next() == h1_prev) {
+   //   	h1_prev->twin()->twin() = h1->twin();
+   //   	h1->twin()->twin() = h1_prev->twin();
+   //   	h1->twin()->twin()->edge() = h1->edge();
+   //   	h1->edge()->halfedge() = h1->twin();
+
+   //   // 	deleteFace(f1);
+   //   // 	deleteEdge(h1_prev->edge());
+   //   // 	deleteHalfedge(h1);
+   //   // 	deleteHalfedge(h1_prev);
+   //   }
+
+      // printf("Here!\n");
+
+   //   if (h2->next() == h2_prev) {
+   //   	h2_prev->twin()->twin() = h2->twin();
+   //   	h2->twin()->twin() = h2_prev->twin();
+   //   	h2_prev->twin()->edge() = h2->edge();
+   //   	h2->edge()->halfedge() = h2->twin();
+   // //   	deleteFace(h2->face());
+   // //   	deleteEdge(h2_prev->edge());
+   // //   	deleteHalfedge(h2);
+   // //   	deleteHalfedge(h2_prev);
+   //   }
+
+   printf("End of Edge Collapse: Cleanup\n");
+
+   // delete
+   //if (delVtx != newVtx) {
+   //  deleteVertex(delVtx);
+   //}
+   deleteVertex(delVtx);
+   deleteEdge(e);
+   deleteHalfedge(h);
+   deleteHalfedge(h_twin);
+   
+   printf("New vertex Position\n");	
+   cout<<newVtx->position<<endl;
+   return newVtx;
+
+
+//     HalfedgeIter h1 = e->halfedge()->next();
+//     HalfedgeIter h2 = e->halfedge()->twin()->next();
+//     HalfedgeIter h1_prev = h1;
+//     HalfedgeIter h2_prev = h2;
+//     printf("Edgecollapse begin\n");
+//     do
+//     {
+//     	h1_prev = h1_prev->next();
+//     }while( h1_prev->next() != e->halfedge() );
+    
+//     do
+//     {
+//     	h2_prev = h2_prev->next();
+//     }while( h2_prev->next() != e->halfedge()->twin());
+    
+//     if(h1->next() == h1_prev)
+//     {
+//     	HalfedgeIter h1_next = h1_prev->twin()->next();
+//     	HalfedgeIter h1_prev_prev = h1_next;
+    	
+//     	do
+//     	{
+//     		h1_prev_prev = h1_prev_prev->next();
+//     	}while(h1_prev_prev->next() != h1_prev->twin());
+    	
+//     	//halfedge assignment
+//     	h1->next() = h1_next;
+//     	h1_prev_prev->next() = e->halfedge();
+    	
+//     	//face assignment
+//     	h1_next->face()->halfedge() = h1_next;
+//     	e->halfedge()->face() = h1_next->face();
+//     	h1->face() = h1_next->face();
+    	
+//     	//vertex assignment
+//     	h1_next->vertex()->halfedge() = h1_next;
+//     	h1_prev_prev->twin()->vertex()->halfedge() = h1_prev_prev->twin();
+    	
+//     	deleteFace(h1_prev->face());
+//     	deleteEdge(h1_prev->edge());
+//     	deleteHalfedge(h1_prev->twin());
+//     	deleteHalfedge(h1_prev); 	
+//     }
+    
+//     if(h2->next() == h2_prev)
+//     {	
+//     	HalfedgeIter h2_next = h2->twin()->next();
+//     	HalfedgeIter h2_prev_prev = h2_next;
+    	
+//     	do
+//     	{
+//     		h2_prev_prev = h2_prev_prev->next();	
+//     	}while(h2_prev_prev->next() != h2->twin());
+    	
+//     	//halfedge assignment
+//     	e->halfedge()->twin()->next() = h2_next;
+//     	h2_prev_prev->next() = h2_prev;
+    	
+//     	//face assignment
+//     	h2_next->face()->halfedge() = h2_next; 
+//     	e->halfedge()->twin()->face() = h2_next->face();
+//     	h2_prev->face() = h2_next->face();
+    	
+//     	//vertex assignment
+//     	h2->vertex()->halfedge() = h2_next;
+//     	h2->twin()->vertex()->halfedge() = h2_prev_prev->twin();
+    	
+//     	deleteFace(h2->face());
+//     	deleteEdge(h2->edge());
+//     	deleteHalfedge(h2->twin());
+//     	deleteHalfedge(h2);
+//     }
+    
+//     e->halfedge()->vertex()->position = e->centroid();
+    
+//     VertexIter newVertex = e->halfedge()->vertex();
+//     VertexIter vertexTBD = e->halfedge()->twin()->vertex();
+    
+//     h1 = e->halfedge()->next();
+//     h1_prev = h1;
+    
+//     do
+//     {
+//     	h1_prev = h1_prev->next();
+//     }while(h1_prev->next() != e->halfedge());
+    
+//     h2 = e->halfedge()->twin()->next();
+//     h2_prev = h2;
+    
+//     do
+//     {
+//     	h2_prev = h2_prev->next();
+//     }while(h2_prev->next() != e->halfedge()->twin());
+     
+//     HalfedgeIter h = h1;
+//     vector<HalfedgeIter> neighbours;
+//     do
+//     {
+// //     	h->vertex() = e->halfedge()->vertex();
+// 		neighbours.push_back(h);
+//     	h = h->twin()->next();
+//     }while(h != e->halfedge()->twin());
+    
+// //      halfedge assignment
+//     h1_prev->next() = h1;
+//     h2_prev->next() = h2;
+    
+// //     face assignment
+//     h1->face()->halfedge() = h1;
+//     h2->face()->halfedge() = h2;
+    
+//     newVertex->halfedge() = h2;
+    
+//     h = e->halfedge();
+//     deleteEdge(h->edge());
+//     deleteHalfedge(h->twin());
+//     deleteHalfedge(h);
+    
+//     for( int i = 0; i < neighbours.size(); i++)
+//     {
+//     	neighbours[i]->vertex() = newVertex;
+//     } 
+    
+//     deleteVertex(vertexTBD);
+//     printf("Edgecollapse end\n");
+//     return newVertex;	
+    
+  }
+
+
+VertexIter HalfedgeMesh::collapseEdge1(EdgeIter e0) {
    // working from EdgeCollapse.svg (incomplete drawing, but names match EdgeSplit.pdf)
 
    // collapse on boundary is not implemented
@@ -324,7 +673,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 	v0->halfedge() = h3->next()->twin()->next(); // move h0 to the first existing similar place on a triangle "above"
 	v1->halfedge() = h0->next()->twin()->next(); // move h3 to the first existing similar place on a triangel "below"
 
-   // // cache local "up"
+  // // cache local "up"
 	// //   edges, faces and halfedges 
 	// vector<EdgeIter> up_e;
 	// vector<FaceIter> up_f;
@@ -396,7 +745,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 	while (temp1 != h3 ) {
       temp1->vertex() = v0;
       temp1 = temp1->twin()->next();
-      thiscount +=1;
+      //thiscount +=1;
    }
 
 	cout << "collapse 1" << endl;
@@ -423,6 +772,10 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 		l4->twin() = l3;
 		l3->edge() = el1;
 		el1->halfedge() = l4;
+		//l3->vertex() = v0;
+		deleteHalfedge(l1);
+		deleteHalfedge(l2);
+		deleteEdge(el2);
    }
    else {
 		//get related halfedges
@@ -434,7 +787,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
 		}
 		//reassign value
 		l2->next() = l1;
-		//l1->face()->halfedge() = l1;  //redundant?
+		l1->face()->halfedge() = l1;  //redundant?
    }
 
 	cout << "collapse now deleting..." << endl;
@@ -448,7 +801,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e0) {
   cout << "delete e0" << endl;
 	deleteEdge(e0);
   //cout << "delete v1" << endl;
-	//deleteVertex(v1);
+	deleteVertex(v1); // my v1 is their v0
   cout << "delete f0" << endl;
 	if (right) { deleteFace(f0); }
   cout << "delete f1" << endl;
@@ -590,7 +943,7 @@ VertexIter HalfedgeMesh::collapseEdge2(EdgeIter e) {
     // TODO: (meshEdit)
     // This method should collapse the given edge and return an iterator to
     // the new vertex created by the collapse.
-    
+
     auto h = e->halfedge();
     auto h_twin = h->twin();
     auto newVtx = h->vertex();
