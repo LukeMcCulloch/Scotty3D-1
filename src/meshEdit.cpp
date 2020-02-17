@@ -309,7 +309,7 @@ std::set<int> HalfedgeMesh::GetVertexOneRing(VertexCIter v) {
       VertexCIter v = h_twin->vertex();// vertex is 'source' of the half edge.
                                        // so h->vertex() is v,
                                        // whereas h_twin->vertex() is the neighbor vertex.
-      cout << " index= " << v->index << " pos = " << v->position << endl;      // print the vertex position
+      //cout << " index= " << v->index << " pos = " << v->position << endl;      // print the vertex position
       OneRing.insert(v->index);               // insert the vertex to the one ring set.
 
       h = h_twin->next();              // move to the next outgoing halfedge of the vertex.
@@ -318,6 +318,7 @@ std::set<int> HalfedgeMesh::GetVertexOneRing(VertexCIter v) {
 
    return OneRing;
 }
+
 
 VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
 
@@ -330,8 +331,8 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
 
    // get intersection of the one ring of vt1 and vt2
    int num_one_ring_shared_adjacent_verts = 0;
-	std::set<int> ring_vt1 = HalfedgeMesh::GetVertexOneRing(vt1);
-	std::set<int> ring_vt2 = HalfedgeMesh::GetVertexOneRing(vt2);
+   std::set<int> ring_vt1 = HalfedgeMesh::GetVertexOneRing(vt1);
+   std::set<int> ring_vt2 = HalfedgeMesh::GetVertexOneRing(vt2);
 
    //int len1 = ring_vt1.size();
    //int len2 = ring_vt2.size();
@@ -350,6 +351,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
 
    if (num_one_ring_shared_adjacent_verts != 2) {
       cout << "Non-manifold Edge Collapse Requested" << endl;
+      e->halfedge()->vertex()->collapseSuccess = false;
       return e->halfedge()->vertex(); 
    }
    
@@ -511,6 +513,7 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
    
    printf("New vertex Position\n");	
    cout<<newVtx->position<<endl;
+   newVtx->collapseSuccess = true;
    return newVtx;
 
 
@@ -2170,7 +2173,7 @@ void MeshResampler::upsample(HalfedgeMesh& mesh) {
   std::cout << "upsample complete" << std::endl;
 }
 
-void MeshResampler::downsample2(HalfedgeMesh& mesh) {
+void MeshResampler::downsample(HalfedgeMesh& mesh) {
   // TODO: (meshEdit)
   // Compute initial quadrics for each face by simply writing the plane equation
   // for the face in homogeneous coordinates. These quadrics should be stored
@@ -2255,7 +2258,16 @@ void MeshResampler::downsample2(HalfedgeMesh& mesh) {
 
 		cout << "5. collapse edge" << endl;
 		cout << "e: " << &(e->halfedge()) << endl;
-		VertexIter v = mesh.collapseEdge(e);		
+		VertexIter v = mesh.collapseEdge(e);	
+      
+      if (v->collapseSuccess) {
+         continue;
+      }
+      else {
+         cout << "--------------------" << endl;
+         cout << "Edge Collapse Failed" << endl;
+      }	
+
 		//cout << "v : " << v->position << endl;
 		cout << "v degree: " << v->degree() << endl;
 
@@ -2266,7 +2278,7 @@ void MeshResampler::downsample2(HalfedgeMesh& mesh) {
 		HalfedgeIter hv = v->halfedge();
 		Matrix4x4 mv;
 		mv.zero();
-    mv = newK;
+      mv = newK;
 		cout << "perhaps..." << endl;
 
 
@@ -2303,7 +2315,7 @@ void MeshResampler::downsample2(HalfedgeMesh& mesh) {
   //showError("downsample() not implemented.");
 }
 
-void MeshResampler::downsample(HalfedgeMesh& mesh)
+void MeshResampler::downsample2(HalfedgeMesh& mesh)
   {
 
     // TODO: (meshEdit)
@@ -2334,7 +2346,7 @@ void MeshResampler::downsample(HalfedgeMesh& mesh)
     	Vector4D v(f->normal().x, f->normal().y, f->normal().z, d);
     	f->quadric = outer(v,v);
     	current_num_polygons++;
-     	cout<<f->quadric<<endl;
+     	//cout<<f->quadric<<endl;
     }
 
     // -> Compute an initial quadric for each vertex as the sum of the quadrics
@@ -2350,7 +2362,6 @@ void MeshResampler::downsample(HalfedgeMesh& mesh)
     	
     	}while(h != v->halfedge());
     	
-     	cout<<v->quadric<<endl;
     }
 
 
@@ -2369,7 +2380,7 @@ void MeshResampler::downsample(HalfedgeMesh& mesh)
     
 
     // Target buget
-    long int target_num_polygons = current_num_polygons / 2;
+    long int target_num_polygons =  3 * current_num_polygons / 4;
 
 
  	cout<<"current_edges: "<<current_num_polygons<<" "<<"target_edges: "<<target_num_polygons<<endl;
@@ -2429,7 +2440,16 @@ void MeshResampler::downsample(HalfedgeMesh& mesh)
 			
  			printf("collapse the new vertex\n");
 			//collapse the edge
+         auto ckvert = bestEdge.edge->halfedge()->vertex();
 			VertexIter collapsedVertex = mesh.collapseEdge(bestEdge.edge);
+         if (collapsedVertex->collapseSuccess) {
+            continue;
+         }
+         else {
+            cout << "--------------------" << endl;
+            cout << "Edge Collapse Failed" << endl;
+            target_num_polygons++;
+         }
 			
  			printf("Assign the new quadric to the new vertex\n");
 			//assign the new quadric to the collapsed vertex
@@ -2455,6 +2475,7 @@ void MeshResampler::downsample(HalfedgeMesh& mesh)
  			printf("Got EdgeRecord\n");
 
     	target_num_polygons--;
+
      	cout<<target_num_polygons<<endl;
     }
     

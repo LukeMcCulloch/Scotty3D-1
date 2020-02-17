@@ -580,6 +580,14 @@ class Vertex : public HalfedgeElement {
    */
   Index index;
 
+  /*
+   * For downsampling, I've added a check to see if a requested
+   * edge to be collapsed will result in a non-manifold mesh.
+   * here the edge collapse will bail out and we need to 
+   * set a flag to say so
+   */
+  bool collapseSuccess;
+
   /**
    * For Loop subdivision, this flag should be true if and only if this
    * vertex is a new vertex created by subdivision (i.e., if it corresponds
