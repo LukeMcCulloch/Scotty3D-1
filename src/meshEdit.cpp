@@ -345,9 +345,10 @@ VertexIter HalfedgeMesh::collapseEdge(EdgeIter e) {
    
    num_one_ring_shared_adjacent_verts = intersect.size();
    cout << "One Ring Intersection = " << num_one_ring_shared_adjacent_verts << endl;
-   for (auto item = intersect.begin(); item != intersect.end(); item++ ) {
-      cout << *item << endl;
-   }
+   
+   // for (auto item = intersect.begin(); item != intersect.end(); item++ ) {
+   //    cout << *item << endl;
+   // }
 
    if (num_one_ring_shared_adjacent_verts != 2) {
       cout << "Non-manifold Edge Collapse Requested" << endl;
@@ -2035,7 +2036,7 @@ EdgeRecord::EdgeRecord(EdgeIter& _edge) : edge(_edge) {
 	A[0][0] = quad[0][0];
 	A[0][1] = quad[0][1];
 	A[0][2] = quad[0][2];
-	A[1][0] = quad[1][2];
+	A[1][0] = quad[1][0]; //TLM mistake found here
 	A[1][1] = quad[1][1];
 	A[1][2] = quad[1][2];
 	A[2][0] = quad[2][0];
@@ -2214,9 +2215,9 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
   //    the collapsed vertex AFTER it's been collapsed. Also remember to assign
   //    a quadric to the collapsed vertex, and to pop the collapsed edge off the
   //    top of the queue.
-  //Size budget = 3 * mesh.nEdges() / 4;
+  Size budget = 7 * mesh.nEdges() / 8;
   //Size budget = mesh.nEdges() / 2;
-  Size budget = mesh.nEdges() - 10;
+  //Size budget = mesh.nEdges() - 3;
 	//cout << "current edge number" << mesh.nEdges() << endl;
 	//cout << "should have: " << mesh.nEdges() - budget << endl;
 	int i = 0;
@@ -2266,6 +2267,7 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
       else {
          cout << "--------------------" << endl;
          cout << "Edge Collapse Failed" << endl;
+         return;
       }	
 
 		//cout << "v : " << v->position << endl;
@@ -2307,9 +2309,10 @@ void MeshResampler::downsample(HalfedgeMesh& mesh) {
 		v->quadric = mv;
 		cout << "--one round--" << endl;
 
-    if (curit > maxit) {
-      return;
-    }
+   //  if (curit > maxit) {
+   //    return;
+   //  }
+
 	}
 	cout << "simplification end" << endl;
   //showError("downsample() not implemented.");
